@@ -6,7 +6,7 @@ from .tools.dbtools import dictfetchall
 
 
 def index(request):
-	return render(request, 'APP_test/index.html')
+	return render(request, 'maintenance/index.html')
 
 
 # 针对tomcat服务器的操作
