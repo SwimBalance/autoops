@@ -1,0 +1,6 @@
+团队：DPCA/DSIM/SYS/PYTHON TEAM
+项目名称：   autoops
+基础架构：   服务器端：Django
+             前端：html css jQuery bootstrap
+平台功能：   1.一线运维：中间件和数据库软件的启停和检查
+             2.三线运维：中间件和数据库配置修改及性能优化
