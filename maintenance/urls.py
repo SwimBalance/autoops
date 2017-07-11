@@ -6,4 +6,6 @@ urlpatterns = [
 	url(r'^operation/$', views.operation, name='operation'),
 	url(r'^tomcatData/$', views.getTomcatData, name='tomcat'),
 	url(r'^oracleData/$', views.getOracleData, name='oracle'),
+url(r'^oracleData/$', views.getOracleData, name='oracle'),
+url(r'^login/$', views.login, name='login'),
 ]
