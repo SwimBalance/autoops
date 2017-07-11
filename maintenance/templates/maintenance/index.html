@@ -8,6 +8,14 @@
     <link href="{% static 'maintenance/bootstrap3.3.7/css/bootstrap.min.css' %}" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Title</title>
+    <!-- 导入Jquery文件-->
+    <script src="{% static 'maintenance/js/jquery-3.2.1.min.js' %}"></script>
+    <script></script>
+    <!--导入bootstrap中的js 插件-->
+    <script src="{% static 'maintenance/bootstrap3.3.7/js/bootstrap.min.js' %}"></script>
+    <!--导入自己的js文件-->
+    <script src="{% static 'maintenance/js/show_workpage.js' %}"></script>
+
 </head>
 <body>
 <header id="header">
@@ -27,167 +35,8 @@
         </ul>
     </nav>
 </aside>
-<div id="main1"
-     style="margin:-20px 0 0 220px;padding:0 0 52px 0;min-height:500px;position: relative;display: none">
-    <div style="height: 100%;border: 1px;">
-        <div class="row">
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li class="active">Tomcat</li>
-            </ol>
-            <div class="col-lg-6" style="float: right">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-        <button class="btn btn-default" type="button">查找</button>
-      </span>
-                </div><!-- /input-group -->
-            </div><!-- /.col-lg-6 -->
-        </div><!-- /.row -->
-        <table class="table table-hover table-condensed">
-            <caption><strong>Tomcat应用服务器清单</strong></caption>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>IP</th>
-                <th>主机名</th>
-                <th>概要</th>
-                <th>检查</th>
-                <th>开启</th>
-                <th>停止</th>
-            </tr>
-            </thead>
-            <tbody class="text">
-
-            </tbody>
-        </table>
-    </div>
-    <div id="tomcat_mes" class="alert alert-info alert-dismissible" role="alert">
-        {#        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span#}
-        {#                aria-hidden="true">&times;</span></button>#}
-    </div>
-</div>
-<div id="main2"
-     style="margin-left: 220px;padding:0 0 52px 0;min-height:500px;position: relative;display: none">
-    <div style="height: 100%;border: 1px;">
-        <div class="row">
-            <div class="col-lg-6" style="float: right">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-        <button class="btn btn-default" type="button">查找</button>
-      </span>
-                </div><!-- /input-group -->
-            </div><!-- /.col-lg-6 -->
-        </div><!-- /.row -->
-        <table class="table table-condensed">
-            <caption><strong>Oracle数据库服务器清单</strong></caption>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>IP</th>
-                <th>主机名</th>
-                <th>SID</th>
-            </tr>
-            </thead>
-            <tbody class="text">
-
-            </tbody>
-        </table>
-    </div>
-    <div id="tomcat_mes" class="alert alert-info alert-dismissible" role="alert">
-        {#        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span#}
-        {#                aria-hidden="true">&times;</span></button>#}
-    </div>
-</div>
+<div id="workpage"></div>
 <div class="page-footer"></div>
-<!-- 导入Jquery文件-->
-<script src="{% static 'maintenance/js/jquery-3.2.1.min.js' %}"></script>
-<script></script>
-<!--导入bootstrap中的js 插件-->
-<script src="{% static 'maintenance/bootstrap3.3.7/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
-<script>
-    $("#toms").click(function () {
-        $('#main2').css('display', 'none');
-        $('#main1').css('display', 'block');
-        $.ajax({
-            type: "GET",
-            url: "{% url 'APP:tomcat' %}",
-            datatype: 'json',
-            success: function (datas) {
-                var text = $('.text');
-                text.empty();
-                var html = '';
-                for (var i = 0; i < datas.length; i++) {
-                    var id = datas[i]['id'];
-                    var ip = datas[i]['ipaddress'];
-                    var host = datas[i]['machine'];
-                    var dec = datas[i]['description'];
-                    html += '<tr>';
-                    html += '<td>' + id + '</td>';
-                    html += '<td>' + ip + '</td>';
-                    html += '<td>' + host + '</td>';
-                    html += '<td>' + dec + '</td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
-                    html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default">';
-                    html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default">';
-                    html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
-                    html += '</tr>';
-                }
-                text.append(html);
-            },
-            error: function (datas) {
-                text.append(datas);
-            }
-        })
-    });
 
-    $("#oras").click(function () {
-        $('#main1').css('display', 'none');
-        $('#main2').css('display', 'block');
-        $.ajax({
-            type: "GET",
-            url: "{% url 'APP:oracle' %}",
-            datatype: 'json',
-            success: function (datas) {
-                var text = $('.text');
-                text.empty();
-                var html = '';
-                for (var i = 0; i < datas.length; i++) {
-                    var id = datas[i]['message'];
-                    var ip = datas[i]['message'];
-                    var host = datas[i]['message'];
-                    var dec = datas[i]['message'];
-                    html += '<tr>';
-                    html += '<td>' + id + '</td>';
-                    html += '<td>' + ip + '</td>';
-                    html += '<td>' + host + '</td>';
-                    html += '<td>' + dec + '</td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
-                    html += '<span class="glyphicon glyphicon-align-left" aria-hidden="true">' + '</span>';
-                    html += '</button>' + '</td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat">start</button>' + '</td>';
-                    html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat">stop</button>' + '</td>';
-                    html += '</tr>';
-                }
-                text.append(html);
-            },
-            error: function (datas) {
-                text.append(datas);
-            }
-        })
-    });
-    function opt_tomcat(obj) {
-        var id = obj.id;
-        var action = obj.name;
-        $.getJSON("{% url 'APP:operation' %}", {'id': id, 'action': action}, function (data) {
-            $("#tomcat_mes").empty()
-            $('#tomcat_mes').append(data['message'])
-        })
-    }
-
-</script>
