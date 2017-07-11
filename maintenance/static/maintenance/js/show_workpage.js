@@ -46,8 +46,6 @@ $(function () {
                 url: "./../oracleData/",
                 datatype: 'json',
                 success: function (datas) {
-                    var text = $('.text');
-                    text.empty();
                     var html = '';
                     for (var i = 0; i < datas.length; i++) {
                         var id = datas[i]['message'];
@@ -66,10 +64,8 @@ $(function () {
                         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat">stop</button>' + '</td>';
                         html += '</tr>';
                     }
-                    text.append(html);
-                },
-                error: function (datas) {
-                    text.append(datas);
+                    var text = $('.text');
+                    text.empty().append(html);
                 }
             })
         }
@@ -80,8 +76,13 @@ $(function () {
 function opt_tomcat(obj) {
     var id = obj.id;
     var action = obj.name;
-    $.getJSON("./../operation", {'id': id, 'action': action}, function (data) {
-        $("#tomcat_mes").empty().append(data['message']);
+    $.ajax({
+        type: 'Get',
+        url: './../operation',
+        data: {'id': id, 'action': action},
+        success: function (data) {
+            $("#tomcat_mes").empty().append(data['message']);
+        }
     })
 }
 
