@@ -1,8 +1,11 @@
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render,HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+
 from .tools.ostools import Task
 from django.db import connection
 from .tools.dbtools import dictfetchall
+import datetime
 
 
 def index(request):
@@ -51,3 +54,36 @@ def get_tomcat_data(request):
 
 def get_oracle_data(request):
     return JsonResponse([{'message': 'ORACLE'}], safe=False)
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        print("post method!")
+        username = request.POST.get('userid','')
+        password = request.POST.get('password','')
+        print("==xxxx==")
+        print(username,password)
+        print("==xxxx==")
+        cursor = connection.cursor()
+        sqlsatement = "select password from accinfo where username="+'"'+username.upper()+'"'
+        print(sqlsatement)
+        cursor.execute(sqlsatement)
+        dpass = cursor.fetchone()
+        if dpass is None:
+            return HttpResponseRedirect("./../login")
+        else:
+            dpass = dpass[0]
+            print(dpass)
+            if (password == dpass):
+                print("Authentication Success!")
+                #return HttpResponse("Hello, world. You're at the login index.")
+                response=HttpResponseRedirect("./../index")
+                #使用cookie存储用户登录的信息
+                response.set_cookie('loginname',username)
+                response.set_cookie('logintime',datetime.datetime.now())
+                return response
+            else:
+                print("Authentication Failed!")
+            return HttpResponseRedirect("./../login")
+    else:
+        print("get method")
+    return render(request,'maintenance/login.html')
