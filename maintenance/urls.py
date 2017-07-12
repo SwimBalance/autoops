@@ -2,10 +2,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r'^index/$', views.index, name='index'),
-	url(r'^operation/$', views.operation, name='operation'),
-	url(r'^tomcatData/$', views.getTomcatData, name='tomcat'),
-	url(r'^oracleData/$', views.getOracleData, name='oracle'),
-url(r'^oracleData/$', views.getOracleData, name='oracle'),
-url(r'^login/$', views.login, name='login'),
+    url(r'^index/$', views.index, name='index'),
+    url(r'^operation/$', views.operation, name='operation'),
+    url(r'^tomcatData/$', views.get_tomcat_data, name='tomcat'),
+    url(r'^oracleData/$', views.get_oracle_data, name='oracle'),
 ]
