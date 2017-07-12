@@ -34,9 +34,6 @@ $(function () {
                         html += '</tr>';
                     }
                     text.append(html);
-                },
-                error: function (datas) {
-                    text.append(datas);
                 }
             });
         } else if (this.id == 'oras') {
