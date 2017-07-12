@@ -3,7 +3,7 @@
  */
 
 $(function () {
-    $("ul li").click(function () {
+    $("ul li[role]").click(function () {
         <!-- 导入workPage-->
         if (this.id == 'toms') {
             $("#workpage").empty().load("./../../static/maintenance/html/workpage.html #tom_workpage");
@@ -11,6 +11,7 @@ $(function () {
                 type: "GET",
                 url: "./../tomcatData/",
                 datatype: 'json',
+                data: {page: 1},
                 success: function (datas) {
                     var text = $('.text');
                     text.empty();
@@ -81,5 +82,39 @@ function opt_tomcat(obj) {
             $("#tomcat_mes").empty().append(data['message']);
         }
     })
+}
+
+function page(obj) {
+    var page_number = obj.innerText;
+    $.ajax({
+        type: "GET",
+        url: "./../tomcatData/",
+        datatype: 'json',
+        data: {page: page_number},
+        success: function (datas) {
+            var text = $('.text');
+            text.empty();
+            var html = '';
+            for (var i = 0; i < datas.length; i++) {
+                var id = datas[i]['id'];
+                var ip = datas[i]['ipaddress'];
+                var host = datas[i]['machine'];
+                var dec = datas[i]['description'];
+                html += '<tr>';
+                html += '<td>' + id + '</td>';
+                html += '<td>' + ip + '</td>';
+                html += '<td>' + host + '</td>';
+                html += '<td>' + dec + '</td>';
+                html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
+                html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+                html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default">';
+                html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
+                html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default">';
+                html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
+                html += '</tr>';
+            }
+            text.append(html);
+        }
+    });
 }
 

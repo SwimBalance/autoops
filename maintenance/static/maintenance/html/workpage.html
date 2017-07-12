@@ -1,42 +1,52 @@
 <!-- tomcat工作页-->
 <div id="tom_workpage"
      style="margin:-20px 0 0 220px;padding:0 0 52px 0;min-height:500px;position: relative">
-    <div style="height: 100%;border: 1px;">
-        <div class="row">
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li class="active">Tomcat</li>
-            </ol>
-            <div class="col-lg-6" style="float: right">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-        <button class="btn btn-default" type="button">查找</button>
-      </span>
-                </div><!-- /input-group -->
-            </div><!-- /.col-lg-6 -->
-        </div><!-- /.row -->
-        <table class="table table-hover table-condensed">
-            <caption><strong>Tomcat应用服务器清单</strong></caption>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>IP</th>
-                <th>主机名</th>
-                <th>概要</th>
-                <th>检查</th>
-                <th>开启</th>
-                <th>停止</th>
-            </tr>
-            </thead>
-            <tbody class="text">
 
-            </tbody>
-        </table>
-    </div>
-    <div id="tomcat_mes" class="alert alert-info alert-dismissible" role="alert">
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Home</a></li>
+            <li class="active">Tomcat</li>
+        </ol>
+        <div class="col-lg-6" style="float: right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">查找</button>
+                    </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div><!-- /.row -->
+    <table class="table table-hover table-condensed">
+        <caption><strong>Tomcat应用服务器清单</strong></caption>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>IP</th>
+            <th>主机名</th>
+            <th>概要</th>
+            <th>检查</th>
+            <th>开启</th>
+            <th>停止</th>
+        </tr>
+        </thead>
+        <tbody class="text"></tbody>
+    </table>
+    <nav style="text-align: center">
+        <ul class="pagination" style="margin: 0">
+            <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
+            <li onclick="page(this)"><a href="javascript:void(0)">1</a></li>
+            <li onclick="page(this)"><a href="javascript:void(0)">2</a></li>
+            <li onclick="page(this)"><a href="javascript:void(0)">3</a></li>
+            <li onclick="page(this)"><a href="javascript:void(0)">4</a></li>
+            <li onclick="page(this)"><a href="javascript:void(0)">5</a></li>
+            <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
+        </ul>
+    </nav>
+    <div id="tomcat_mes" class="alert alert-info alert-dismissible" role="alert" style="margin: 20px auto;">
     </div>
 </div>
+
+
 <!-- oracle工作页-->
 <div id="ora_workpage"
      style="margin-left: 220px;padding:0 0 52px 0;min-height:500px;position: relative;">
