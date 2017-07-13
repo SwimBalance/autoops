@@ -21,9 +21,18 @@ def operation(request):
             'SELECT id, tomcatport, tomcathome, ipaddress, startwait, stopwait FROM tomcatdata WHERE id = %s' % vm_id
         )
         tomcater = dictfetchall(cursor)[0]
+        serverip=tomcater['ipaddress']
+        cursor.execute(
+            "SELECT user1,password1 FROM machine_pwd WHERE ipaddress = '%s'" % serverip
+         )
+        userinfo=dictfetchall(cursor)[0]
+        print(userinfo)
     # print(tomcater)
     if vm_action == 'check_tomcat':
-        command = 'ifconfig'
+        tomcat_home = tomcater['tomcathome']
+        tomcat_port = tomcater['tomcatport']
+        command = 'sh /operation/tomcat/checktomcat.sh %s %s ' % (tomcat_home, tomcat_port)
+        print(command)
     elif vm_action == 'start_tomcat':
         # 需要传入三个参数 home目录/端口号/启动超时时长
         tomcat_home = tomcater['tomcathome']
@@ -31,6 +40,7 @@ def operation(request):
         start_wait = tomcater['startwait']
         # sh_dir = '/operation/tomcat/starttomcat.sh'
         command = 'sh /operation/tomcat/starttomcat.sh %s %s %s ' % (tomcat_home, tomcat_port, start_wait)
+        print(command)
     elif vm_action == 'stop_tomcat':
         # 需要传入三个参数 home目录/端口号/启动超时时长
         tomcat_home = tomcater['tomcathome']
@@ -38,14 +48,33 @@ def operation(request):
         stop_wait = tomcater['stopwait']
         # sh_dir = '/operation/tomcat/starttomcat.sh'
         command = 'sh /operation/tomcat/stoptomcat.sh %s %s %s ' % (tomcat_home, tomcat_port, stop_wait)
+        print(command)
     task_info = {
         'ip': tomcater['ipaddress'],
-        'user': 'root',
-        'pwd': 'rootroot',
+        'user': userinfo['user1'],
+        'pwd': userinfo['password1'],
         'cmd': command,
     }
     mytask = Task(task_info)
-    message = mytask.execute()
+    message = mytask.execute().strip()
+    oper_user = request.COOKIES.get('loginname')
+    print(oper_user)
+    with connection.cursor() as cursor:
+        sqlstatement =  "insert into audit_log (oper_user, oper_command, oper_message) VALUES ('%s', '%s', '%s')" % (oper_user, command, message)
+        print(sqlstatement)
+        cursor.execute(sqlstatement)
+    # print(message)
+    # print(type(message))
+    if message=='101':
+        message='Tomcat正常运行.'
+    elif message=='102':
+        message='Tomcat异常,请人工检查.'
+    elif message=='103':
+        message='Tomcat服务关闭.'
+    elif message=='104':
+        message='Tomcat启动超时.'
+    elif message=='105':
+        message='Tomcat关闭超时.'
     return JsonResponse({'message': message})
 
 

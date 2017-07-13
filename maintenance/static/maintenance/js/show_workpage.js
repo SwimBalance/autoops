@@ -3,7 +3,7 @@
  */
 
 $(function () {
-    $("ul[id='ul_navigation'] li").click(function () {
+    $("ul[id='servicemgr'] li").click(function () {
         <!-- 导入workPage-->
         if (this.id == 'toms') {
             $("#workpage").empty().load("./../../static/maintenance/html/workpage.html #tom_workpage");
@@ -32,6 +32,8 @@ $(function () {
 
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
+    var tomcat_mes = $("#tomcat_mes");
+    tomcat_mes.empty();
     var id = obj.id;
     var action = obj.name;
     $.ajax({
@@ -39,7 +41,7 @@ function opt_tomcat(obj) {
         url: './../operation',
         data: {'id': id, 'action': action},
         success: function (data) {
-            $("#tomcat_mes").empty().append(data['message']);
+            tomcat_mes.append(data['message']);
         }
     })
 }
