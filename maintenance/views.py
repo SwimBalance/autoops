@@ -51,8 +51,6 @@ def operation(request):
 
 # 展示服务器列表
 def get_tomcat_data(request):
-    # 使用SQL
-
     with connection.cursor() as cursor:
         page_number = int(request.GET.get('page'))
         m = (page_number - 1) * 5
@@ -61,10 +59,22 @@ def get_tomcat_data(request):
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
+# 根据IP或者主机名搜索服务器
+def search_tomcat(request):
+    search_val = request.GET.get('data')
+    sqlsatement = "select id, machine, tomcathome, ipaddress, description from tomcatdata WHERE ipaddress= '%s' OR machine= '%s'" % (
+        search_val, search_val)
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+        data = dictfetchall(cursor)
+    return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
 def get_oracle_data(request):
     return JsonResponse([{'message': 'ORACLE'}], safe=False)
 
 
+# 登录
 @csrf_exempt
 def login(request):
     if request.method == 'POST':

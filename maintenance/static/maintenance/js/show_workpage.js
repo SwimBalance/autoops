@@ -30,7 +30,7 @@ $(function () {
     });
 });
 
-
+// 针对tomcat服务器的操作
 function opt_tomcat(obj) {
     var id = obj.id;
     var action = obj.name;
@@ -43,7 +43,7 @@ function opt_tomcat(obj) {
         }
     })
 }
-
+// 分页
 function page(obj) {
     var page_number = obj.innerText;
     $.ajax({
@@ -56,7 +56,7 @@ function page(obj) {
         }
     });
 }
-
+//导入tomcat数据
 function loadtomcatdata(datas) {
     var text = $('.text');
     text.empty();
@@ -81,7 +81,20 @@ function loadtomcatdata(datas) {
     }
     text.append(html);
 }
-
+//搜索栏
+function searchtomcat() {
+    var search_val = $('#search_tom').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchtomcat/",
+        data: {'data': search_val},
+        datatype: "json",
+        success: function (datas) {
+            loadtomcatdata(datas);
+            $('#preandnext').empty()
+        }
+    })
+}
 function loadoracledata(datas) {
     var html = '';
     for (var i = 0; i < datas.length; i++) {
@@ -104,3 +117,4 @@ function loadoracledata(datas) {
     var text = $('.text');
     text.empty().append(html);
 }
+

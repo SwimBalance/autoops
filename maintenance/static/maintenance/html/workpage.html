@@ -9,9 +9,9 @@
         </ol>
         <div class="col-lg-6" style="float: right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for...">
+                <input id="search_tom" type="text" class="form-control" placeholder="Search for...">
                 <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">查找</button>
+                        <button class="btn btn-default" type="button" onclick="searchtomcat()">查找</button>
                     </span>
             </div><!-- /input-group -->
         </div><!-- /.col-lg-6 -->
@@ -31,7 +31,7 @@
         </thead>
         <tbody class="text"></tbody>
     </table>
-    <nav style="text-align: center">
+    <nav id="preandnext" style="text-align: center">
         <ul class="pagination" style="margin: 0">
             <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
             <li onclick="page(this)"><a href="javascript:void(0)">1</a></li>
