@@ -82,8 +82,8 @@ def operation(request):
 def get_tomcat_data(request):
     with connection.cursor() as cursor:
         page_number = int(request.GET.get('page'))
-        m = (page_number - 1) * 5
-        cursor.execute('select id, machine, tomcathome, ipaddress, description from tomcatdata LIMIT %d, %d;' % (m, 5))
+        m = (page_number - 1) * 10
+        cursor.execute('select id, machine, tomcathome, ipaddress, description from tomcatdata LIMIT %d, %d;' % (m, 10))
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 

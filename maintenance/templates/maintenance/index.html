@@ -18,7 +18,7 @@
 
 </head>
 <body>
-<div class=" container-fluid" style="border:1px solid black">
+<div class=" container-fluid">
     <div class="row">
         <div class="col-lg-12" style="text-align:center;background-color: #9acfea">
             <h3>AUTO OPERATION
@@ -56,10 +56,25 @@
                     </ul>
                 </li>
             </ul>
-            {#            </nav>#}
         </div>
         <div class="col-lg-10">
             <div id="workpage"></div>
+            <!-- 模态框（Modal） -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">操作结果</h4>
+                        </div>
+                        <div class="modal-body" id="tomcat_mes"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
         </div>
     </div>
     <div class="page-footer"></div>

@@ -6,7 +6,7 @@ $(function () {
     $("ul[id='servicemgr'] li").click(function () {
         <!-- 导入workPage-->
         if (this.id == 'toms') {
-            $("#workpage").empty().load("./../../static/maintenance/html/workpage.html #tom_workpage");
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #tom_workpage");
             $.ajax({
                 type: "GET",
                 url: "./../tomcatData/",
@@ -17,7 +17,7 @@ $(function () {
                 }
             });
         } else if (this.id == 'oras') {
-            $("#workpage").empty().load("./../../static/maintenance/html/workpage.html #ora_workpage");
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #ora_workpage");
             $.ajax({
                 type: "GET",
                 url: "./../oracleData/",
@@ -33,7 +33,7 @@ $(function () {
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
     var tomcat_mes = $("#tomcat_mes");
-    tomcat_mes.empty();
+    tomcat_mes.empty().append("正在玩命操作，请等待…")
     var id = obj.id;
     var action = obj.name;
     $.ajax({
@@ -41,7 +41,7 @@ function opt_tomcat(obj) {
         url: './../operation',
         data: {'id': id, 'action': action},
         success: function (data) {
-            tomcat_mes.append(data['message']);
+            tomcat_mes.empty().append(data['message']);
         }
     })
 }
@@ -73,11 +73,11 @@ function loadtomcatdata(datas) {
         html += '<td>' + ip + '</td>';
         html += '<td>' + host + '</td>';
         html += '<td>' + dec + '</td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
         html += '</tr>';
     }
