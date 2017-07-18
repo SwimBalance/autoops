@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-lg-6" style="float: right">
                     <div class="input-group">
-                        <input id="search_tom" type="text" class="form-control" placeholder="IP/服务器名称">
+                        <input id="search_tom" type="text" class="form-control" placeholder="IP/服务器名称" onkeydown="if(event.keyCode==13) {searchtomcat()}">
                         <span class="input-group-btn">
         <button class="btn btn-default" type="button" onclick="searchtomcat()">查找</button>
       </span>
