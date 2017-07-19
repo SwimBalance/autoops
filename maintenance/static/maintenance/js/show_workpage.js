@@ -33,7 +33,7 @@ $(function () {
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
     var tomcat_mes = $("#tomcat_mes");
-    tomcat_mes.empty().append("正在玩命操作，请等待…")
+    tomcat_mes.empty().append("正在玩命操作，请等待…");
     var id = obj.id;
     var action = obj.name;
     $.ajax({
@@ -42,12 +42,20 @@ function opt_tomcat(obj) {
         data: {'id': id, 'action': action},
         success: function (data) {
             tomcat_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '101') {
+                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-ok-sign')
+            } else if (data['status'] == '102') {
+                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-exclamation-sign')
+            } else if (data['status'] == '103') {
+                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-remove-sign')
+            }
         }
     })
 }
 // 分页
 function page(obj) {
-    var page_number = obj.innerText;
+    var page_number = $(obj).text();
     $.ajax({
         type: "GET",
         url: "./../tomcatData/",
@@ -68,11 +76,21 @@ function loadtomcatdata(datas) {
         var ip = datas[i]['ipaddress'];
         var host = datas[i]['machine'];
         var dec = datas[i]['description'];
+        var status = datas[i]['status'];
         html += '<tr>';
         html += '<td>' + id + '</td>';
         html += '<td>' + ip + '</td>';
         html += '<td>' + host + '</td>';
         html += '<td>' + dec + '</td>';
+        // html += '<td class="status">' + status + '</td>';
+        //更新状态
+        if (status == '101') {
+            html += '<td class="status"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span></td>';
+        } else if (status == '102') {
+            html += '<td class="status"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></td>';
+        } else if (status == '103') {
+            html += '<td class="status"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></td>';
+        }
         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
@@ -82,9 +100,11 @@ function loadtomcatdata(datas) {
         html += '</tr>';
     }
     text.append(html);
+
 }
 //搜索栏
 function searchtomcat() {
+
     var search_val = $('#search_tom').val();
     $.ajax({
         type: "GET",
