@@ -11,7 +11,8 @@ def index(request):
     return render(request, 'maintenance/index.html')
 
 
-def get_taskinfo(tomcat_id, tomcat_action, oper):  # 根据ID生成taskinfo
+# 根据ID生成taskinfo
+def get_taskinfo(tomcat_id, tomcat_action, oper):
     with connection.cursor() as cursor:
         cursor.execute(
             'SELECT id, tomcatport, tomcathome, ipaddress, startwait, stopwait FROM tomcatdata WHERE id = %s' % tomcat_id
@@ -53,7 +54,8 @@ def get_taskinfo(tomcat_id, tomcat_action, oper):  # 根据ID生成taskinfo
     return task_info
 
 
-def genrecords_updatestatus(taskinfo): #写入操作记录并更新tomcat状态
+# 写入操作记录并更新tomcat状态
+def genrecords_updatestatus(taskinfo):
     with connection.cursor() as cursor:
         sqlstatement1 = "insert into audit_log (oper_user, oper_command, oper_message) VALUES ('%s', '%s', '%s')" % (
             taskinfo['oper'], taskinfo['cmd'], taskinfo['resulut'])
@@ -104,7 +106,8 @@ def get_tomcat_data(request):
     with connection.cursor() as cursor:
         page_number = int(request.GET.get('page'))
         m = (page_number - 1) * 10
-        cursor.execute('select id, machine, tomcathome, ipaddress, description, status from tomcatdata LIMIT %d, %d;' % (m, 10))
+        cursor.execute(
+            'select id, machine, tomcathome, ipaddress, description, status from tomcatdata LIMIT %d, %d;' % (m, 10))
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 

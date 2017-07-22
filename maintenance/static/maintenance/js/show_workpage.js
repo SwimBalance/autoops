@@ -45,7 +45,7 @@ function opt_tomcat(obj) {
             //更新状态
             if (data['status'] == '101') {
                 $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-ok-sign')
-            } else if (data['status'] == '102') {
+            } else if (data['status'] == '102' || data['status'] == '104' || data['status'] == '105') {
                 $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-exclamation-sign')
             } else if (data['status'] == '103') {
                 $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-remove-sign')
@@ -86,7 +86,7 @@ function loadtomcatdata(datas) {
         //更新状态
         if (status == '101') {
             html += '<td class="status"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span></td>';
-        } else if (status == '102') {
+        } else if (status == '102' || status == '104' || status == '105') {
             html += '<td class="status"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></td>';
         } else if (status == '103') {
             html += '<td class="status"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></td>';
