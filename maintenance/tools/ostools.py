@@ -18,19 +18,17 @@ class Task(object):
             port=22,
             timeout=10
         )
-        # 判断是否连接成功
-        ###################
         return connectObj
 
     def execute(self):
         try:
-            connectObj = self.create_connect()
+            con = self.create_connect()
         except:
             return '102'
         cmd = self.task_info['cmd']
-        stdin, stdout, stderr = connectObj.exec_command(cmd)
+        stdin, stdout, stderr = con.exec_command(cmd)
         result = stdout.read()
-        connectObj.close()
+        con.close()
         if not result:
             result = stderr.read().strip()
         return result.decode().strip()
