@@ -5,8 +5,26 @@ from .tools.ostools import Task
 from django.db import connection
 from .tools.dbtools import dictfetchall
 import datetime
+from django.urls import reverse
 
 
+# 给页面增加验证功能装饰器,如果浏览器cookies中没有用户信息，返回主页面
+def login_auth(f):
+    def decorator(*args):
+        userinfo = args[0].COOKIES.get('loginname')
+        print('userinfo=', userinfo)
+        if userinfo is not None:
+            return f(*args)
+        else:
+            print(reverse('APP:login'))
+            return HttpResponseRedirect(reverse('APP:login'))
+            # return HttpResponseRedirect(reverse("login"))
+            # return render(args[0], 'maintenance/index.html')
+
+    return decorator
+
+
+#@login_auth
 def index(request):
     return render(request, 'maintenance/index.html')
 
@@ -142,21 +160,21 @@ def login(request):
         cursor.execute(sqlsatement)
         dpass = cursor.fetchone()
         if dpass is None:
-            return HttpResponseRedirect("./../login")
+            return HttpResponseRedirect(reverse('APP:login'))
         else:
             dpass = dpass[0]
             print(dpass)
             if password == dpass:
                 print("Authentication Success!")
                 # return HttpResponse("Hello, world. You're at the login index.")
-                response = HttpResponseRedirect("./../index")
+                response = HttpResponseRedirect(reverse('APP:index'))
                 # 使用cookie存储用户登录的信息
                 response.set_cookie('loginname', username)
                 response.set_cookie('logintime', datetime.datetime.now())
                 return response
             else:
                 print("Authentication Failed!")
-            return HttpResponseRedirect("./../login")
+            return HttpResponseRedirect(reverse('APP:login'))
     else:
         print("get method")
     return render(request, 'maintenance/login.html')
