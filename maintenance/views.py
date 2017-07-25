@@ -29,6 +29,8 @@ def index(request):
     return render(request, 'maintenance/index.html')
 
 
+# 根据ID生成taskinfo
+def get_taskinfo(tomcat_id, tomcat_action, oper):
 def get_taskinfo(tomcat_id, tomcat_action, oper):  # 根据ID生成taskinfo
     command = ''
     with connection.cursor() as cursor:
@@ -72,7 +74,8 @@ def get_taskinfo(tomcat_id, tomcat_action, oper):  # 根据ID生成taskinfo
     return task_info
 
 
-def genrecords_updatestatus(taskinfo):  # 写入操作记录并更新tomcat状态
+# 写入操作记录并更新tomcat状态
+def genrecords_updatestatus(taskinfo):
     with connection.cursor() as cursor:
         sqlstatement1 = "insert into audit_log (oper_user, oper_command, oper_message) VALUES ('%s', '%s', '%s')" % (
             taskinfo['oper'], taskinfo['cmd'], taskinfo['resulut'])
