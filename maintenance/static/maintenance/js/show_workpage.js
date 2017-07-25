@@ -85,11 +85,11 @@ function loadtomcatdata(datas) {
         // html += '<td class="status">' + status + '</td>';
         //更新状态
         if (status == '101') {
-            html += '<td class="status"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span></td>';
+            html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat正常运行"></span></td>';
         } else if (status == '102' || status == '104' || status == '105') {
-            html += '<td class="status"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></td>';
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"  data-toggle="tooltip" title="Tomcat异常，请联系管理员"></span></td>';
         } else if (status == '103') {
-            html += '<td class="status"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></td>';
+            html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat已关闭"></span></td>';
         }
         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
@@ -100,7 +100,7 @@ function loadtomcatdata(datas) {
         html += '</tr>';
     }
     text.append(html);
-
+    $(function () { $("[data-toggle='tooltip']").tooltip(); });
 }
 //搜索栏
 function searchtomcat() {
