@@ -31,7 +31,6 @@ def index(request):
 
 # 根据ID生成taskinfo
 def get_taskinfo(tomcat_id, tomcat_action, oper):
-def get_taskinfo(tomcat_id, tomcat_action, oper):  # 根据ID生成taskinfo
     command = ''
     with connection.cursor() as cursor:
         cursor.execute(
