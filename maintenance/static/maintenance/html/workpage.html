@@ -2,22 +2,24 @@
 <div id="tom_workpage">
     <div style="border: 1px;">
         <div class="row">
-            <ol class="breadcrumb">
-                <li><a href="#">Home</a></li>
-                <li class="active">Tomcat</li>
-            </ol>
-            <div class="row">
-                <div class="col-lg-6" style="float: right">
+            <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">Tomcat</li>
+                </ol>
+            </div>
+            <!--<div class="row"> -->
+                <div class="col-lg-5" style="padding: 1px">
                     <div class="input-group">
                         <input id="search_tom" type="text" class="form-control" placeholder="IP/服务器名称" onkeydown="if(event.keyCode==13) {searchtomcat()}">
                         <span class="input-group-btn">
-        <button class="btn btn-default" type="button" onclick="searchtomcat()">查找</button>
-      </span>
+                            <button class="btn btn-default" type="button" onclick="searchtomcat()">查找</button>
+                        </span>
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
-            </div><!-- /.row -->
+            <!--</div> /.row -->
             <table class="table table-hover table-condensed">
-                <caption><strong>Tomcat应用服务器清单</strong></caption>
+                <!--<caption><strong>Tomcat应用服务器清单</strong></caption> -->
                 <thead>
                 <tr>
                     <th>ID</th>

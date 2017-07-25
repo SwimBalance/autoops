@@ -122,11 +122,14 @@ def operation(request):
 
 # 展示服务器列表
 def get_tomcat_data(request):
+    #定义每个页面最大显示的数据行数
+    maxline = 9
     with connection.cursor() as cursor:
         page_number = int(request.GET.get('page'))
-        m = (page_number - 1) * 10
+        #数据查询的起点
+        startpos = (page_number - 1) * maxline
         cursor.execute(
-            'select id, machine, tomcathome, ipaddress, description, status from tomcatdata LIMIT %d, %d;' % (m, 10))
+            'select id, machine, tomcathome, ipaddress, description, status,startwait,stopwait from tomcatdata LIMIT %d, %d;' % (startpos, maxline))
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 

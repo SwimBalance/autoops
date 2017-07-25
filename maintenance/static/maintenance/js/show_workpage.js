@@ -32,8 +32,16 @@ $(function () {
 
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
-    var tomcat_mes = $("#tomcat_mes");
-    tomcat_mes.empty().append("正在玩命操作，请等待…");
+    var tomcat_mes = $("#message");
+    //获取button上记录的该操作的超时时间
+    var opstime=obj.value;
+    //alert(opstime);
+    $('#progstatus').css('width','0%');
+    tomcat_mes.empty().append("正在玩命操作，预计"+opstime+"秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    $("#messagemodal").prop('disabled',true);
     var id = obj.id;
     var action = obj.name;
     $.ajax({
@@ -42,6 +50,7 @@ function opt_tomcat(obj) {
         data: {'id': id, 'action': action},
         success: function (data) {
             tomcat_mes.empty().append(data['message']);
+            $('#progstatus').css('width','100%');
             //更新状态
             if (data['status'] == '101') {
                 $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-ok-sign')
@@ -50,8 +59,10 @@ function opt_tomcat(obj) {
             } else if (data['status'] == '103') {
                 $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-remove-sign')
             }
+            $(obj).removeClass('disabled');
+            $("#messagemodal").removeAttr("disabled");
         }
-    })
+    });
 }
 // 分页
 function page(obj) {
@@ -77,9 +88,11 @@ function loadtomcatdata(datas) {
         var host = datas[i]['machine'];
         var dec = datas[i]['description'];
         var status = datas[i]['status'];
+        var startwait = datas[i]['startwait'];
+        var stopwait = datas[i]['stopwait'];
         html += '<tr>';
         html += '<td>' + id + '</td>';
-        html += '<td>' + ip + '</td>';
+        html += '<td class="ipaddress">' + ip + '</td>';
         html += '<td>' + host + '</td>';
         html += '<td>' + dec + '</td>';
         // html += '<td class="status">' + status + '</td>';
@@ -93,10 +106,13 @@ function loadtomcatdata(datas) {
         }
         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        //html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="'+startwait+'">';
         html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="'+stopwait+'">';
         html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
+        // += '<td class="startwait" style="display:none" >' + startwait + '</td>';
+        //html += '<td class="stopwait"  style="display:none">' + stopwait + '</td>';
         html += '</tr>';
     }
     text.append(html);
