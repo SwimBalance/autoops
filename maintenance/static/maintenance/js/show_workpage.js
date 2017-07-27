@@ -32,10 +32,14 @@ $(function () {
 
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
+    var count=0;
+    var widthcount=0;
+    var timer1;
     var tomcat_mes = $("#message");
     //获取button上记录的该操作的超时时间
     var opstime=obj.value;
     //alert(opstime);
+    //初始化进度条为0
     $('#progstatus').css('width','0%');
     tomcat_mes.empty().append("正在玩命操作，预计"+opstime+"秒内完成！");
     //点击button后，将当前button标记为disabled的状态
@@ -48,21 +52,42 @@ function opt_tomcat(obj) {
         type: 'Get',
         url: './../operation',
         data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend:showprogress(),
         success: function (data) {
             tomcat_mes.empty().append(data['message']);
-            $('#progstatus').css('width','100%');
             //更新状态
             if (data['status'] == '101') {
-                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-ok-sign')
+                $(obj).parent().prevAll('.status').children('span').attr({'class':'glyphicon glyphicon-ok-sign','title':'Tomcat正常运行'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title':'Tomcat正常运行'}).tooltip('fixTitle');
             } else if (data['status'] == '102' || data['status'] == '104' || data['status'] == '105') {
-                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-exclamation-sign')
+                $(obj).parent().prevAll('.status').children('span').attr({'class':'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title':'Tomcat异常，请联系管理员'}).tooltip('fixTitle');
             } else if (data['status'] == '103') {
-                $(obj).parent().prevAll('.status').children('span').attr('class', 'glyphicon glyphicon-remove-sign')
+                $(obj).parent().prevAll('.status').children('span').attr({'class':'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title':'Tomcat已关闭'}).tooltip('fixTitle');
             }
             $(obj).removeClass('disabled');
             $("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            $('#progstatus').css("width","100%");
         }
     });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1=setInterval(function () {
+            count = count+1;
+            //alert(count);
+            widthcount=(count/opstime)*100;
+            $('#progstatus').css("width",widthcount+"%");
+            //如果达到超时时间，停止定时器
+            if(parseInt(count)==parseInt(opstime)){
+            clearInterval(timer1);
+            }
+        },1000);
+    }
 }
 // 分页
 function page(obj) {
@@ -90,6 +115,7 @@ function loadtomcatdata(datas) {
         var status = datas[i]['status'];
         var startwait = datas[i]['startwait'];
         var stopwait = datas[i]['stopwait'];
+        var checkwait = datas[i]['checkwait'];
         html += '<tr>';
         html += '<td>' + id + '</td>';
         html += '<td class="ipaddress">' + ip + '</td>';
@@ -100,11 +126,11 @@ function loadtomcatdata(datas) {
         if (status == '101') {
             html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat正常运行"></span></td>';
         } else if (status == '102' || status == '104' || status == '105') {
-            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"  data-toggle="tooltip" title="Tomcat异常，请联系管理员"></span></td>';
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat异常，请联系管理员"></span></td>';
         } else if (status == '103') {
             html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat已关闭"></span></td>';
         }
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="'+checkwait+'">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
         //html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
         html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="'+startwait+'">';

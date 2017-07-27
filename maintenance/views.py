@@ -129,7 +129,7 @@ def get_tomcat_data(request):
         #数据查询的起点
         startpos = (page_number - 1) * maxline
         cursor.execute(
-            'select id, machine, tomcathome, ipaddress, description, status,startwait,stopwait from tomcatdata LIMIT %d, %d;' % (startpos, maxline))
+            'select id, machine, tomcathome, ipaddress, description, status,startwait,stopwait,checkwait from tomcatdata LIMIT %d, %d;' % (startpos, maxline))
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
