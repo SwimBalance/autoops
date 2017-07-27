@@ -190,3 +190,11 @@ $(function () {
         $("#workpage").empty().load("/static/maintenance/html/workpage.html #home_workpage");
     })
 });
+
+$(function () {
+    $("ul[id='report'] li").click(function () {
+        if (this.id=='auditlog'){
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #auditlog_workpage");
+        }
+    })
+});

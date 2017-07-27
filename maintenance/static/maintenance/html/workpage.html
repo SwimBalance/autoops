@@ -1,16 +1,16 @@
 <!-- 主页工作页-->
 <div id="home_workpage">
     <div class="row" >
-        <div class="items" style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">1</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">2</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">3</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">4</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">1</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">2</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">3</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">4</div>
     </div>
     <div class="row">
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">1</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">2</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">3</div>
-        <div class="items"  style="width:22%;margin:15px;height: 220px;border: solid 1px bisque;float: left">4</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">1</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">2</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">3</div>
+        <div class="items"  style="width:20%;margin:2%;height: 220px;border: solid 1px bisque;float: left">4</div>
     </div>
 </div>
 <!-- tomcat工作页-->
@@ -33,7 +33,7 @@
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
             <!--</div> /.row -->
-            <table class="table table-hover table-condensed">
+            <table class="table table-bordered table-hover table-condensed">
                 <!--<caption><strong>Tomcat应用服务器清单</strong></caption> -->
                 <thead>
                 <tr>
@@ -94,5 +94,42 @@
         </table>
     </div>
     <div id="oracle_mes" class="alert alert-info alert-dismissible" role="alert">
+    </div>
+</div>
+
+
+<!-- 报表工作页-->
+<div id="auditlog_workpage">
+    <div class="row" >
+        <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">Audit Log</li>
+                </ol>
+            </div>
+            <!--<div class="row"> -->
+                <div class="col-lg-5" style="padding: 1px">
+                    <div class="input-group">
+                        <input id="search_tom" type="text" class="form-control" placeholder="操作人员/操作类型/服务器名称" onkeydown="if(event.keyCode==13) {searchtomcat()}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="searchauditlog()">查找</button>
+                        </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+        <table class="table table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th class="col-lg-1 ">操作人员</th>
+                <th class="col-lg-2 ">操作服务器</th>
+                <th class="col-lg-1 ">操作类型</th>
+                <th class="col-lg-5 ">操作命令</th>
+                <th class="col-lg-2 ">操作结果</th>
+                <th class="col-lg-1 ">操作时间</th>
+            </tr>
+            </thead>
+            <tbody class="text">
+
+            </tbody>
+        </table>
     </div>
 </div>

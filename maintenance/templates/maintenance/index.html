@@ -132,7 +132,7 @@
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
                     <ul id="report" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
-                        <li class="active"><a href="#"><i class="glyphicon glyphicon-user"></i> 用户操作日志</a></li>
+                        <li id="auditlog" class="active"><a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i> 用户操作日志</a></li>
                     </ul>
                 </li>
 
@@ -152,7 +152,7 @@
             {#            </nav>#}
         </div>
         <div class="col-lg-10">
-            <div id="workpage" ></div>
+            <div id="workpage" style="width: 98%;margin-left: 2px"></div>
             <!-- 模态框（Modal） -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
