@@ -32,16 +32,20 @@ def index(request):
 # 根据ID生成taskinfo
 def get_taskinfo(tomcat_id, tomcat_action, oper):
     command = ''
+    userinfo = ''
     with connection.cursor() as cursor:
         cursor.execute(
             'SELECT id, tomcatport, tomcathome, ipaddress, startwait, stopwait FROM tomcatdata WHERE id = %s' % tomcat_id
         )
         tomcater = dictfetchall(cursor)[0]
         serverip = tomcater['ipaddress']
-        cursor.execute(
+        res = cursor.execute(
             "SELECT user1,password1 FROM machine_pwd WHERE ipaddress = '%s'" % serverip
         )
-        userinfo = dictfetchall(cursor)[0]
+        if res:
+            userinfo = dictfetchall(cursor)[0]
+        else:
+            userinfo={'user1':'other','password1':'other'}
     if tomcat_action == 'check_tomcat':
         tomcat_home = tomcater['tomcathome']
         tomcat_port = tomcater['tomcatport']
@@ -100,6 +104,7 @@ def operation(request):
     # 传入taskinfo，执行SQL操作，返回目标服务器控制台的结果
     mytask = Task(taskinfo)
     result = mytask.execute()
+    #print("result=",result)
     if result.isdigit():
         taskinfo['resulut'] = result
     else:

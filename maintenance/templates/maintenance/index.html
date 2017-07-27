@@ -27,13 +27,13 @@
         }
     </style>
 </head>
-<body>
+<body >
 <div class=" container-fluid">
     <div class="row">
-        <div class="col-lg-12" style="text-align:center;background-color: #9acfea">
-            <h3>AUTO OPERATION
+        <div class="col-lg-12" style="background-color: #f8f8f8;border:solid 1px #e7e7e7;height: 50px">
+            <span style="font-size: 18px;line-height: 50px;padding-top: 20px">AUTO OPERATION
                 <small>自动化运维平台</small>
-            </h3>
+            </span>
         </div>
     </div>
     <div class="row ">
@@ -69,25 +69,27 @@
             </ul>
         </div>
         -->
-        <div class="col-lg-2" style="margin-left :-15px;">
-            <ul class="nav nav-pills nav-stacked">
-                <li id="home" role="presentation" class="active"><a href="javascript:void(0)"><span class="glyphicon glyphicon-home"></span> 主页</a></li>
-                <li class="active">
+        <div class="col-lg-2" style="background-color: #f8f8f8;min-height: 570px;margin: 0;padding: 0">
+            <ul class="nav nav-pills nav-stacked" style="margin: 0;padding: 0">
+
+                <li id="home" role="presentation" class="" style="border-bottom: solid 1px #e7e7e7"><a href="javascript:void(0)"><span class="glyphicon glyphicon-home"></span> 主页</a></li>
+                <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#setup" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-cloud "></i> 服务器部署
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="setup" class="nav nav-list collapse">
+                    <ul id="setup" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-user"></i> 数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> 中间件</a></li>
                     </ul>
                 </li>
-                <li class="active">
+
+                <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#config" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-cog"></i> 软件参数配置
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="config" class="nav nav-list collapse">
+                    <ul id="config" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> Oracle数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> MySQL数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> Tomcat</a></li>
@@ -95,25 +97,27 @@
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-eye-open"></i> Apache</a></li>
                     </ul>
                 </li>
-                <li class="active">
+
+                <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#servicemgr" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-tasks"></i> 服务启停
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="servicemgr" class="nav nav-list collapse " style="list-style: none">
-                        <li id="oras" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Oracle服务启停</a></li>
-                        <li id="mysqls" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> MySQL服务启停</a></li>
+                    <ul id="servicemgr" class="nav nav-list collapse " style="list-style: none;text-indent: 1em">
+                        <li id="oras" role="presentation"><a href="javascript:void(0)" ><i class="glyphicon glyphicon-warning-sign"></i>Oracle服务启停</a></li>
+                        <li id="mysqls" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i>MySQL服务启停</a></li>
                         <li id="toms" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Tomcat服务启停</a></li>
                         <li id="apache" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Apache服务启停</a></li>
                         <li id="nginx" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Nginx服务启停</a></li>
                     </ul>
                 </li>
-                <li class="active">
+
+                <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#tools" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-wrench"></i> 常用工具
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="tools" class="nav nav-list collapse">
+                    <ul id="tools" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-time"></i> CRONTAB管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-file"></i> 脚本管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> 数据库性能分析</a></li>
@@ -121,21 +125,23 @@
                         <li><a href="#"><i class="glyphicon glyphicon-user"></i> 系统日志查看</a></li>
                     </ul>
                 </li>
-                <li class="active">
+
+                <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#report" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-dashboard"></i> 报表
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="report" class="nav nav-list collapse">
+                    <ul id="report" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-user"></i> 用户操作日志</a></li>
                     </ul>
                 </li>
-                <li class="active">
+
+                <li class=" " style="border-bottom: solid 1px #e7e7e7">
                     <a href="#systemsetting" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-compressed "></i> 系统管理
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="systemsetting" class="nav nav-list collapse">
+                    <ul id="systemsetting" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-user"></i> 用户信息维护</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> 应用系统信息维护</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> 服务器信息维护</a></li>
@@ -146,7 +152,7 @@
             {#            </nav>#}
         </div>
         <div class="col-lg-10">
-            <div id="workpage"></div>
+            <div id="workpage" ></div>
             <!-- 模态框（Modal） -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -168,8 +174,8 @@
             </div>
         </div>
     </div>
-    <div class="page-footer"></div>
+    <div class="page-footer">
+    </div>
 </div>
-
 </body>
 </html>

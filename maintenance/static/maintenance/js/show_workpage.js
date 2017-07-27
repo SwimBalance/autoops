@@ -32,13 +32,15 @@ $(function () {
 
 // 针对tomcat服务器的操作
 function opt_tomcat(obj) {
+    //进度条当前宽度
     var count=0;
     var widthcount=0;
+    //定时器变量
     var timer1;
+    //获取modal的body
     var tomcat_mes = $("#message");
     //获取button上记录的该操作的超时时间
     var opstime=obj.value;
-    //alert(opstime);
     //初始化进度条为0
     $('#progstatus').css('width','0%');
     tomcat_mes.empty().append("正在玩命操作，预计"+opstime+"秒内完成！");
@@ -182,3 +184,9 @@ function loadoracledata(datas) {
     text.empty().append(html);
 }
 
+
+$(function () {
+    $("#home").click(function () {
+        $("#workpage").empty().load("/static/maintenance/html/workpage.html #home_workpage");
+    })
+});
