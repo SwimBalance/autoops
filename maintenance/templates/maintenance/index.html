@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 引入 Bootstrap -->
     <link href="{% static 'maintenance/bootstrap3.3.7/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'maintenance/css/custom.css' %}" rel="stylesheet">
     <meta charset="UTF-8">
     <!-- 导入Jquery文件-->
     <script src="{% static 'maintenance/js/jquery-3.2.1.min.js' %}"></script>
@@ -28,11 +29,25 @@
     </style>
 </head>
 <body >
-<div class=" container-fluid">
-    <div class="row">
-        <div class="col-lg-12" style="background-color: #f8f8f8;border:solid 1px #e7e7e7;height: 50px">
-            <span style="font-size: 18px;line-height: 50px;padding-top: 20px">AUTO OPERATION
+<div class=" container-fluid" >
+    <div class="row"  >
+        <div class="col-lg-12" style="background-color: #f8f8f8;height: 50px;border:solid 1px #e7e7e7">
+            <span style="font-size: 18px;line-height: 50px;color: #888888;">AUTO OPERATION
                 <small>自动化运维平台</small>
+                <ul class="nav nav-pills navbar-right" style="margin-right: 10%">
+                 <!--bar user dropdown list -->
+                    <li class="dropdown">
+                            <span class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <span class="glyphicon glyphicon-user" style="color: #2aabd2"><span class="caret"></span></span>
+                            </span>
+                            <ul class="dropdown-menu" style="text-indent: 0.1em">
+                                <li id="changepwd"><a href="javascript:void(0)"><span class="glyphicon glyphicon-cog"></span> 修改密码</a></li>
+                                <li id="logout"><a href="javascript:void(0)"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+                                 <!--add new menu -->
+                            </ul>
+                    </li>
+                <!--add new nav bar -->
+                </ul>
             </span>
         </div>
     </div>
@@ -70,9 +85,10 @@
         </div>
         -->
         <div class="col-lg-2" style="background-color: #f8f8f8;min-height: 570px;margin: 0;padding: 0">
-            <ul class="nav nav-pills nav-stacked" style="margin: 0;padding: 0">
+            <ul id="leftnav" class="nav nav-pills nav-stacked" style="margin: 0;padding: 0">
 
                 <li id="home" role="presentation" class="" style="border-bottom: solid 1px #e7e7e7"><a href="javascript:void(0)"><span class="glyphicon glyphicon-home"></span> 主页</a></li>
+
                 <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#setup" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-cloud "></i> 服务器部署
@@ -178,4 +194,6 @@
     </div>
 </div>
 </body>
+<script>
+</script>
 </html>

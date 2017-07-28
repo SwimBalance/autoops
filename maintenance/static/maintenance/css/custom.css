@@ -1,0 +1,7 @@
+.items{
+    width:20%;
+    margin:2%;
+    height: 220px;
+    border: solid 1px bisque;
+    float: left
+}

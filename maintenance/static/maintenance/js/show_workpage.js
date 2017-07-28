@@ -198,3 +198,10 @@ $(function () {
         }
     })
 });
+
+$(function () {
+    $("ul>li>a[data-toggle='collapse']").click(function () {
+        //点击一级菜单后隐藏其他一级菜单打开的二级菜单
+        $(this).parent().siblings('li').children('a').siblings('ul').collapse('hide');
+    })
+});
