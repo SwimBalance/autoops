@@ -110,7 +110,7 @@
             <!--<div class="row"> -->
                 <div class="col-lg-5" style="padding: 1px">
                     <div class="input-group">
-                        <input id="search_tom" type="text" class="form-control" placeholder="操作人员/操作类型/服务器名称" onkeydown="if(event.keyCode==13) {searchtomcat()}">
+                        <input id="search_tom" type="text" class="form-control" placeholder="操作人员/操作类型/服务器名称" onkeydown="if(event.keyCode==13) {searchauditlog()}">
                         <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchauditlog()">查找</button>
                         </span>
@@ -133,3 +133,40 @@
         </table>
     </div>
 </div>
+
+
+<!-- 系统管理：用户信息维护-->
+<div id="usermanagement_workpage">
+    <div class="row" >
+        <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">User Management</li>
+                </ol>
+            </div>
+            <!--<div class="row"> -->
+                <div class="col-lg-5" style="padding: 1px">
+                    <div class="input-group">
+                        <input id="search_tom" type="text" class="form-control" placeholder="工号/组" onkeydown="if(event.keyCode==13) {searchuser()}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="searchauditlog()">查找</button>
+                        </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+        <table class="table table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th class="col-lg-2">工号</th>
+                <th class="col-lg-3">邮箱</th>
+                <th class="col-lg-2">权限级别</th>
+                <th class="col-lg-2">组</th>
+                <th class="col-lg-3">操作</th>
+            </tr>
+            </thead>
+            <tbody class="text">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 增加新的页面div-->

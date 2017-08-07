@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^tomcatData/$', views.get_tomcat_data, name='tomcat'),
     url(r'^oracleData/$', views.get_oracle_data, name='oracle'),
     url(r'^searchtomcat/$', views.search_tomcat, name='oracle'),
+    url(r'^usermanagement/$', views.get_user_data, name='usermanagement'),
     url(r'^$', views.login, name='login'),
 ]

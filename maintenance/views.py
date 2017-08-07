@@ -125,7 +125,7 @@ def operation(request):
     })
 
 
-# 展示服务器列表
+# 展示tomcat服务器列表
 def get_tomcat_data(request):
     #定义每个页面最大显示的数据行数
     maxline = 9
@@ -139,15 +139,30 @@ def get_tomcat_data(request):
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
-# 根据IP或者主机名搜索服务器
+# 根据IP或者主机名搜索tomcat服务器
 def search_tomcat(request):
     search_val = request.GET.get('data')
-    sqlsatement = "select id, machine, tomcathome, ipaddress, description from tomcatdata WHERE ipaddress= '%s' OR machine= '%s'" % (
+    sqlsatement = "select id, machine, tomcathome, ipaddress, description,status,startwait,stopwait,checkwait from tomcatdata WHERE ipaddress= '%s' OR machine= '%s'" % (
         search_val, search_val)
     with connection.cursor() as cursor:
         cursor.execute(sqlsatement)
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+# 展示系统中用户的信息
+def get_user_data(request):
+    #定义每个页面最大显示的数据行数
+    maxline = 9
+    with connection.cursor() as cursor:
+        page_number = int(request.GET.get('page'))
+        #数据查询的起点
+        startpos = (page_number - 1) * maxline
+        cursor.execute(
+            'select id,username,password, email, privilege,groups,regtime from accinfo LIMIT %d, %d;' % (startpos, maxline))
+        data = dictfetchall(cursor)
+    return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
 
 
 def get_oracle_data(request):

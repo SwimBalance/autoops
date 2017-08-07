@@ -2,6 +2,7 @@
  * Created by d046532 on 2017/7/11.
  */
 
+//加载服务启停功能的内容
 $(function () {
     $("ul[id='servicemgr'] li").click(function () {
         <!-- 导入workPage-->
@@ -191,6 +192,7 @@ $(function () {
     })
 });
 
+//加载auditlog的内容(报表=>用户操作日志)
 $(function () {
     $("ul[id='report'] li").click(function () {
         if (this.id=='auditlog'){
@@ -199,6 +201,55 @@ $(function () {
     })
 });
 
+//加载用户信息维护的内容(系统管理=>用户信息维护)
+$(function () {
+    $("ul[id='systemsetting'] li").click(function () {
+        if (this.id=='usermanagement'){
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #usermanagement_workpage");
+            $.ajax({
+                type: "GET",
+                url: "./../usermanagement/",
+                datatype: 'json',
+                data: {page: 1},
+                success: function (datas) {
+                    loaduserdata(datas)
+                }
+            });
+        }
+    })
+});
+//加载用户数据功能的实现：loaduserdata
+function loaduserdata(datas) {
+    //获取tbody的jquery对象，准备填充从数据库中获取到的数据。填充数据前先将tbody中的内容清空；
+    var text = $('.text');
+    text.empty();
+    var html = '';
+    for (var i = 0; i < datas.length; i++) {
+        var id = datas[i]['id'];
+        var username = datas[i]['username'];
+        var password = datas[i]['password'];
+        var privilege = datas[i]['privilege'];
+        var email = datas[i]['email'];
+        var groups = datas[i]['groups'];
+        var regtime = datas[i]['regtime'];
+        html += '<tr>';
+        html += '<td>' + username + '</td>';
+        html += '<td >' + email + '</td>';
+        html += '<td>' + privilege + '</td>';
+        html += '<td>' + groups + '</td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+        html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
+        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + id + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userdelmodal">';
+        html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
+        html += '</tr>';
+    }
+    text.append(html);
+    $(function () { $("[data-toggle='tooltip']").tooltip(); });
+}
+
+
+
+//左侧导航栏功能实现：点击一个导航栏后，自动收缩其他已经打开的导航菜单
 $(function () {
     $("ul>li>a[data-toggle='collapse']").click(function () {
         //点击一级菜单后隐藏其他一级菜单打开的二级菜单
