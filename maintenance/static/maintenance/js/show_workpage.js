@@ -218,7 +218,7 @@ $(function () {
         }
     })
 });
-//加载用户数据功能的实现：loaduserdata
+//加载用户数据功能的实现,同时每行数据生成一个修改和删除的按钮：loaduserdata
 function loaduserdata(datas) {
     //获取tbody的jquery对象，准备填充从数据库中获取到的数据。填充数据前先将tbody中的内容清空；
     var text = $('.text');
@@ -237,16 +237,58 @@ function loaduserdata(datas) {
         html += '<td >' + email + '</td>';
         html += '<td>' + privilege + '</td>';
         html += '<td>' + groups + '</td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+        html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
         html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
-        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + id + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userdelmodal">';
+        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
         html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
         html += '</tr>';
     }
     text.append(html);
-    $(function () { $("[data-toggle='tooltip']").tooltip(); });
 }
 
+// 针对用户信息维护按钮的操作，点击后将部分值记录到modal中：
+function opt_usermanagement(obj) {
+    var id = obj.id;
+    var action = obj.name;
+    var del_diag = $("#messageuserdel");
+    del_diag.empty().append('<label id="'+id+'"'+ 'title="'+action+'">真的要删除用户'+id+"吗?"+'</label>');
+    /*$.ajax({
+        type: 'Get',
+        url: './../operation/userinfo',
+        data: {'id': id, 'action': action},
+        success: function (data) {
+            del_diag.empty().append(data['message']);
+            $(obj).removeClass('disabled');
+            $("#messagemodal").removeAttr("disabled");
+        }
+    });*/
+}
+//用户信息维护：modal中确认删除用户信息，发送数据到后台
+function deleteuser(obj) {
+  //获取当前弹出窗口中label中记录的用户、操作方法;
+    var action = $(obj).parent().siblings().children('label').attr('title');
+    var id = $(obj).parent().siblings().children('label').attr('id');
+    var del_diag = $("#messageuserdel");
+    $.ajax({
+        type: 'Get',
+        url: './../operation/deleteuser',
+        data: {'id': id},
+        success: function (data) {
+            del_diag.empty().append(data);
+            //数据删除后，禁用按钮，同时取消按钮变成退出按钮
+            $(obj).prop('disabled',true);
+            $('#messagemodal').text("退出");
+            //window.location.reload();
+        }
+    });
+}
+//用户信息维护：modal中退出按钮点击时，刷新数据
+function refreshdata() {
+    //模拟页面点击，刷新页面
+    $("#usermanagement").trigger("click");
+    //同时将禁用的按钮变成可用状态
+    $("#deleteuser").removeAttr("disabled");
+}
 
 
 //左侧导航栏功能实现：点击一个导航栏后，自动收缩其他已经打开的导航菜单

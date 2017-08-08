@@ -162,6 +162,34 @@ def get_user_data(request):
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
+# 根据前端请求，删除某一个用户
+def opdeluser(request):
+    #获取前端传过来的用户名称
+    message=''
+    username = request.GET.get('id')
+    oper = request.COOKIES.get('loginname')
+    print(username,oper)
+    if (username == oper):
+        message='不能删除自己，请联系管理员'
+    else:
+        with connection.cursor() as cursor:
+            #查询当前用户组，如果不是admin组，提示该用户没有权限
+            sqlstatement1 = "select groups from accinfo where username= '%s'" % oper
+            print(sqlstatement1)
+            cursor.execute(sqlstatement1)
+            data = dictfetchall(cursor)[0]['groups']
+            print(data)
+            if data !='admin':
+                message='您没有删除用户的权限，请联系管理员'
+                print(message)
+            else:
+                sqlstatement2 ="delete from accinfo where username='%s'" % username
+                print(sqlstatement2)
+                cursor.execute(sqlstatement2)
+                message = '用户已经删除'
+                print(message)
+    return JsonResponse(message, safe=False, json_dumps_params={'ensure_ascii': False})
+
 
 
 

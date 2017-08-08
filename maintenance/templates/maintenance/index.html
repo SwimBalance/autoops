@@ -169,7 +169,7 @@
         </div>
         <div class="col-lg-10">
             <div id="workpage" style="width: 98%;margin-left: 2px"></div>
-            <!-- 模态框（Modal）:tomcat操作弹出窗口界面 -->
+            <!-- 模态框（Modal）:tomcat操作弹出窗口界面 :START-->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog">
@@ -188,7 +188,7 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-
+            <!-- 模态框（Modal）:tomcat操作弹出窗口界面 :END-->
 
             <!-- 模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:START-->
             <div class="modal fade" id="userdelmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -196,14 +196,13 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <span class="glyphicon glyphicon-alert" style="color: red"><small> 请核对用户信息</small></span>
+                            <span class="glyphicon glyphicon-alert" style="color: red"><small> 请仔细核对要删除的用户名</small></span>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
-                        <div class="modal-body" id="message">真的要删除这个人吗？</div>
-
+                        <div class="modal-body" id="messageuserdel"></div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default">确认删除</button>
-                            <button id="messagemodal" type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                            <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">确认删除</button>
+                            <button id="messagemodal" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
                         </div>
                     </div>
                 </div>
