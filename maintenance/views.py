@@ -248,10 +248,12 @@ def login(request):
         print(username, password)
         print("==xxxx==")
         cursor = connection.cursor()
-        sqlsatement = "SELECT password FROM accinfo WHERE username=%r" % username.upper()
+        sqlsatement = "SELECT password,groups FROM accinfo WHERE username=%r" % username.upper()
         # print(sqlsatement)
         cursor.execute(sqlsatement)
         dpass = cursor.fetchone()
+        group = dpass[1]
+        print("message=",dpass,"dpass1=", dpass[1])
         if dpass is None:
             return HttpResponseRedirect(reverse('APP:login'))
         else:
@@ -263,6 +265,7 @@ def login(request):
                 response = HttpResponseRedirect(reverse('APP:index'))
                 # 使用cookie存储用户登录的信息
                 response.set_cookie('loginname', username)
+                response.set_cookie('group',group)
                 response.set_cookie('logintime', datetime.datetime.now())
                 return response
             else:

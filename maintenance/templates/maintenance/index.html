@@ -39,7 +39,7 @@
                  <!--bar user dropdown list -->
                     <li class="dropdown">
                             <span class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <span class="glyphicon glyphicon-user" style="color: #2aabd2"><small id="welcome"> 欢迎用户 {{ user }}</small><span class="caret"></span></span>
+                                    <span class="glyphicon glyphicon-user" style="color: #2aabd2"><small id="welcome"> 欢迎用户 <i id="welcomeuser">{{ user }}</i></small><span class="caret"></span></span>
                             </span>
                             <ul class="dropdown-menu" style="text-indent: 0.1em">
                                 <li id="changepwd"><a href="javascript:void(0)"><span class="glyphicon glyphicon-cog"></span> 修改密码</a></li>
@@ -138,7 +138,7 @@
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-time"></i> CRONTAB管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-file"></i> 脚本管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> 数据库性能分析</a></li>
-                        <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-eye-open"></i> 系统健康检查</a></li>
+                        <li id="systemhealthcheck"><a href="javascript:void(0)"><i class="glyphicon glyphicon-eye-open"></i> 系统健康检查</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-user"></i> 系统日志查看</a></li>
                     </ul>
                 </li>

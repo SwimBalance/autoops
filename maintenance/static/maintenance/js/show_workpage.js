@@ -266,6 +266,11 @@ $(function () {
 });
 //加载用户数据功能的实现,同时每行数据生成一个修改和删除的按钮：loaduserdata
 function loaduserdata(datas) {
+    //获取当前用户名称
+    var currentuser = $('#welcomeuser').text();
+    var group=getcookie('group');
+    //alert(document.cookie);
+    //alert(group);
     //获取tbody的jquery对象，准备填充从数据库中获取到的数据。填充数据前先将tbody中的内容清空；
     var text = $('.text');
     text.empty();
@@ -278,21 +283,55 @@ function loaduserdata(datas) {
         var email = datas[i]['email'];
         var groups = datas[i]['groups'];
         var regtime = datas[i]['regtime'];
-        html += '<tr>';
-        html += '<td>' + username + '</td>';
-        html += '<td >' + email + '</td>';
-        html += '<td>' + privilege + '</td>';
-        html += '<td>' + groups + '</td>';
-        html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
-        html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
-        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement_delete(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
-        html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
-        html += '</tr>';
+        if (currentuser==username ||group=='admin') {
+            html += '<tr>';
+            html += '<td>' + username + '</td>';
+            html += '<td >' + email + '</td>';
+            html += '<td>' + privilege + '</td>';
+            html += '<td>' + groups + '</td>';
+            html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)"  name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+            html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
+            html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '<button id=' + username + ' onclick="opt_usermanagement_delete(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
+            html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
+            html += '</tr>';
+        }
+        else {
+            html += '<tr>';
+           html += '<td>' + username + '</td>';
+            html += '<td >' + email + '</td>';
+            html += '<td>' + privilege + '</td>';
+            html += '<td>' + groups + '</td>';
+            html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)" disabled="disabled" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+            html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
+            html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + '<button id=' + username + ' onclick="opt_usermanagement_delete(this)" disabled="disabled" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
+            html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
+            html += '</tr>';
+        }
+        // html += '<tr>';
+        // html += '<td>' + username + '</td>';
+        // html += '<td >' + email + '</td>';
+        // html += '<td>' + privilege + '</td>';
+        // html += '<td>' + groups + '</td>';
+        // html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+        // html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
+        // html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement_delete(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
+        // html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
+        // html += '</tr>';
     }
     text.append(html);
     html='<button class="btn btn-primary" data-toggle="modal" data-target="#addusermodal"><span class="glyphicon glyphicon-plus"></span> 添加新用户</button>'
     text.append(html);
 
+}
+
+//获取指定名称的cookie的值
+function getcookie(objname){
+    var arrstr = document.cookie.split(";");
+    for(var i = 0;i < arrstr.length;i ++){
+        var temp = arrstr[i].split("=");
+        if(temp[0].trim() == objname)
+            return temp[1];
+    }
 }
 
 // 针对用户信息维护按钮的操作，点击后将部分值记录到modal中：
@@ -406,6 +445,24 @@ function opt_updata() {
 
 
 
+
+//常用工具功能各页面加载
+$(function () {
+    $("ul[id='tools'] li").click(function () {
+        if (this.id=='systemhealthcheck'){
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #systemhealthcheck_workpage");
+            $.ajax({
+                type: "GET",
+                url: "./../auditlog/",
+                datatype: 'json',
+                data: {page: 1},
+                success: function (datas) {
+                    loadauditlogdata(datas)
+                }
+            });
+        }
+    })
+});
 
 
 
