@@ -247,19 +247,6 @@ function page_auditlog(obj) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //加载用户信息维护的内容(系统管理=>用户信息维护)
 $(function () {
     $("ul[id='systemsetting'] li").click(function () {
@@ -296,9 +283,9 @@ function loaduserdata(datas) {
         html += '<td >' + email + '</td>';
         html += '<td>' + privilege + '</td>';
         html += '<td>' + groups + '</td>';
-        html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
+        html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
         html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
-        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
+        html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement_delete(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
         html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
         html += '</tr>';
     }
@@ -309,7 +296,7 @@ function loaduserdata(datas) {
 }
 
 // 针对用户信息维护按钮的操作，点击后将部分值记录到modal中：
-function opt_usermanagement(obj) {
+function opt_usermanagement_delete(obj) {
     var id = obj.id;
     var action = obj.name;
     var del_diag = $("#messageuserdel");
@@ -339,7 +326,7 @@ function deleteuser(obj) {
             del_diag.empty().append(data);
             //数据删除后，禁用按钮，同时取消按钮变成退出按钮
             $(obj).prop('disabled',true);
-            $('#messagemodal').text("退出");
+            $('#messagemodal1').text("退出");
             //window.location.reload();
         }
     });
@@ -350,7 +337,84 @@ function refreshdata() {
     $("#usermanagement").trigger("click");
     //同时将禁用的按钮变成可用状态
     $("#deleteuser").removeAttr("disabled");
+    //将退出按钮中的提示修改为取消
+    $('#messagemodal1').text("取消");
 }
+
+
+//用户信息维护功能中,点击修改按钮来获取该用户所对应的信息
+function opt_usermanagement_change(obj) {
+    $('#savemess').attr("disabled", false);
+    $('#savemess').text('保存');
+    $('#messagemodal2').text('取消');
+    var userid = obj.id;
+    $.ajax({
+        type: "GET",
+        url: "./../operation/modifyuserdata/",
+        datatype: 'json',
+        data: {userid: userid},
+        success: function (datas) {
+            $("#username").val(datas[1]);  //获取后台传输过来的用户名
+            $("#password").val(datas[2]);  //获取后台传输过来的密码
+            $("#email").val(datas[3]);     //获取后台传输过来的邮箱
+            $("#privilege").val(datas[4]);  //获取后台传输过来的权限
+            $("#group").val(datas[5]);     //获取后台传输过来的属组
+        }
+    })
+}
+
+//用户信息修改功能
+function opt_save() {
+    var username = $('#username').val();
+    var password = $('#password').val();
+    var email = $('#email').val();
+    var privilege = $('#privilege').val();
+    var group = $('#group').val();
+    $.ajax({
+        type: "GET",
+        url: "./../operation/saveuserdata/",
+        datatype: 'json',
+        data: {username: username, password: password, email: email, privilege: privilege, group: group},
+        success: function (datas) {
+            $('#savemess').attr("disabled", true);
+            $("#username").val("");
+            $("#password").val("");
+            $("#email").val("");
+            $("#privilege").val("");
+            $("#group").val("");
+            $('#savemess').text('保存成功');
+            $('#messagemodal2').text('退出');
+
+        }
+    })
+}
+//用户信息保存成功后，点击退出同时刷新页面数据
+function opt_updata() {
+    // $("#workpage").empty().load("/static/maintenance/html/workpage.html #usermanagement_workpage");
+    // $.ajax({
+    //     type: "GET",
+    //     url: "./../usermanagement/",
+    //     datatype: 'json',
+    //     data: {page: 1},
+    //     success: function (datas) {
+    //         loaduserdata(datas)
+    //     }
+    // });
+    $("#usermanagement").trigger("click");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //左侧导航栏功能实现：点击一个导航栏后，自动收缩其他已经打开的导航菜单

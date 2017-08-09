@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 引入 Bootstrap -->
     <link href="{% static 'maintenance/bootstrap3.3.7/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'maintenance/fontawesome/css/font-awesome.min.css' %}" rel="stylesheet">
     <link href="{% static 'maintenance/css/custom.css' %}" rel="stylesheet">
     <meta charset="UTF-8">
     <!-- 导入Jquery文件-->
@@ -202,7 +203,7 @@
                         <div class="modal-body" id="messageuserdel"></div>
                         <div class="modal-footer">
                             <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">确认删除</button>
-                            <button id="messagemodal" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
+                            <button id="messagemodal1" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
                         </div>
                     </div>
                 </div>
@@ -242,21 +243,70 @@
                                 </select>
                             </div>
                             <div>
-                                <label id="groups">用户组</label>
-                                <select class="form-control">
+                                <label >用户组</label>
+                                <select id="group" class="form-control">
                                     <option>admin</option>
                                     <option>normal</option>
                                 </select>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button  type="button" class="btn btn-default">保存修改</button>
-                            <button  id="messagemodal1" type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+                            <button  id="savemess" onclick="opt_save(this)" type="button" class="btn btn-default">保存修改</button>
+                            <button  id="messagemodal2" type="button"  onclick="opt_updata(this)" class="btn btn-primary" data-dismiss="modal">取消</button>
                         </div>
                     </div>
                 </div>
             </div>
 <!--模态框（Modal）:用户信息维护界面：用户修改时的确认窗口:END-->
+
+<!-- 模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:START-->
+<div class="modal fade" id="addusermodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="glyphicon glyphicon-alert" style="color: red"><middle> 提交前请仔细核对新增用户信息</middle></span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>用户名</label>
+                 <input id="username" type="text" class="form-control" name="email"
+                       value="">
+                <label>用户密码</label>
+                <input id="password" type="password" class="form-control" name="email"
+                       placeholder="Password">
+                <label>邮箱</label>
+                <input id="email" type="email" class="form-control" name="email" placeholder="Email">
+                <div  >
+                    <label >用户权限</label>
+                    <select  class="form-control">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </div>
+                <div>
+                    <label >用户组</label>
+                    <select class="form-control">
+                        <option>admin</option>
+                        <option>normal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">确认添加</button>
+                <button id="messagemodal3" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:END-->
+
 
 
 

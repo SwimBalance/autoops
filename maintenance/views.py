@@ -165,7 +165,7 @@ def search_tomcat(request):
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
-# 展示系统中用户的信息
+# 系统管理：用户信息维护：展示系统中用户的信息
 def get_user_data(request):
     #定义每个页面最大显示的数据行数
     maxline = 9
@@ -178,7 +178,7 @@ def get_user_data(request):
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
-# 根据前端请求，删除某一个用户
+# 系统管理：用户信息维护：根据前端请求，删除某一个用户
 def opdeluser(request):
     #获取前端传过来的用户名称
     message=''
@@ -205,6 +205,30 @@ def opdeluser(request):
                 message = '用户已经删除'
                 print(message)
     return JsonResponse(message, safe=False, json_dumps_params={'ensure_ascii': False})
+
+#系统管理：用户信息维护：修改用户信息
+def modify_user_data(request):
+    userid = request.GET.get('userid')
+    sqlsatement = "select id,username,password, email, privilege,groups from accinfo WHERE username= '%s'" % userid
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+        data = cursor.fetchone()
+    return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+#系统管理：用户信息维护：保存用户信息
+def save_user_data(request):
+    user_username = request.GET.get('username')
+    user_password = request.GET.get('password')
+    user_email = request.GET.get('email')
+    user_privilege = request.GET.get('privilege')
+    user_group = request.GET.get('group')
+    print(user_username+user_password+user_email+user_privilege+user_group)
+    sqlsatement = "update accinfo set username='%s',password='%s',email='%s',privilege=%s,groups='%s' WHERE username='%s'" % (user_username,user_password,user_email,user_privilege,user_group,user_username)
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+    return JsonResponse('dddd', safe=False, json_dumps_params={'ensure_ascii': False})
+
+
 
 
 
