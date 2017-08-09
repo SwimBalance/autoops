@@ -197,9 +197,68 @@ $(function () {
     $("ul[id='report'] li").click(function () {
         if (this.id=='auditlog'){
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #auditlog_workpage");
+            $.ajax({
+                type: "GET",
+                url: "./../auditlog/",
+                datatype: 'json',
+                data: {page: 1},
+                success: function (datas) {
+                    loadauditlogdata(datas)
+                }
+            });
         }
     })
 });
+//导入auditlog数据
+function loadauditlogdata(datas) {
+    var text = $('.text');
+    text.empty();
+    var html = '';
+    for (var i = 0; i < datas.length; i++) {
+        var user = datas[i]['oper_user'];
+        var host = datas[i]['machine'];
+        var ip = datas[i]['IP'];
+        var command = datas[i]['command'];
+        var message = datas[i]['description'];
+        var time = datas[i]['oper_time'];
+        html += '<tr>';
+        html += '<td>' + user + '</td>';
+        html += '<td >' + host + '</td>';
+        html += '<td>' + ip + '</td>';
+        html += '<td>' + command + '</td>';
+        html += '<td>' + message + '</td>';
+        html += '<td>' + time + '</td>';
+        html += '</tr>';
+    }
+    text.append(html);
+}
+// auditlog分页
+function page_auditlog(obj) {
+    var page_number = $(obj).text();
+    $.ajax({
+        type: "GET",
+        url: "./../auditlog/",
+        datatype: 'json',
+        data: {page: page_number},
+        success: function (datas) {
+            loadauditlogdata(datas)
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //加载用户信息维护的内容(系统管理=>用户信息维护)
 $(function () {
@@ -244,6 +303,9 @@ function loaduserdata(datas) {
         html += '</tr>';
     }
     text.append(html);
+    html='<button class="btn btn-primary" data-toggle="modal" data-target="#addusermodal"><span class="glyphicon glyphicon-plus"></span> 添加新用户</button>'
+    text.append(html);
+
 }
 
 // 针对用户信息维护按钮的操作，点击后将部分值记录到modal中：
@@ -298,3 +360,4 @@ $(function () {
         $(this).parent().siblings('li').children('a').siblings('ul').collapse('hide');
     })
 });
+

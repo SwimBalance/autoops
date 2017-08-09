@@ -26,8 +26,8 @@ def login_auth(f):
 
 #@login_auth
 def index(request):
-    return render(request, 'maintenance/index.html')
-
+    currentuser = request.COOKIES.get('loginname')
+    return render(request, 'maintenance/index.html',{'user':currentuser})
 
 # 根据ID生成taskinfo
 def get_taskinfo(tomcat_id, tomcat_action, oper):
@@ -138,6 +138,22 @@ def get_tomcat_data(request):
         data = dictfetchall(cursor)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
 
+# 展示auditlog列表
+def get_auditlog_data(request):
+    #定义每个页面最大显示的数据行数
+    maxline = 13
+    with connection.cursor() as cursor:
+        page_number = int(request.GET.get('page'))
+        #数据查询的起点
+        startpos = (page_number - 1) * maxline
+        cursor.execute(
+            'select audit_log.oper_user, audit_log.machine, audit_log.IP, audit_log.command, statuscode.description, audit_log.oper_time from audit_log RIGHT JOIN statuscode ON audit_log.oper_message=statuscode.returncode LIMIT %d, %d;' % (startpos, maxline))
+        data = dictfetchall(cursor)
+    return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+def search_auditlog(request):
+    return None
+
 
 # 根据IP或者主机名搜索tomcat服务器
 def search_tomcat(request):
@@ -168,7 +184,7 @@ def opdeluser(request):
     message=''
     username = request.GET.get('id')
     oper = request.COOKIES.get('loginname')
-    print(username,oper)
+    print("username from ajax:"+username+",username from cookiess:"+oper)
     if (username == oper):
         message='不能删除自己，请联系管理员'
     else:

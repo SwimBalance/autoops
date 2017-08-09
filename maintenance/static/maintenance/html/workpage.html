@@ -119,12 +119,12 @@
         <table class="table table-bordered table-hover table-condensed">
             <thead>
             <tr>
-                <th class="col-lg-1 ">操作人员</th>
-                <th class="col-lg-2 ">操作服务器</th>
-                <th class="col-lg-1 ">操作类型</th>
-                <th class="col-lg-5 ">操作命令</th>
+                <th class="col-lg-2 ">操作人员</th>
+                <th class="col-lg-2 ">服务器名称</th>
+                <th class="col-lg-2 ">IP地址</th>
+                <th class="col-lg-2 ">操作类型</th>
                 <th class="col-lg-2 ">操作结果</th>
-                <th class="col-lg-1 ">操作时间</th>
+                <th class="col-lg-2 ">操作时间</th>
             </tr>
             </thead>
             <tbody class="text">
@@ -132,7 +132,19 @@
             </tbody>
         </table>
     </div>
+        <nav id="page_log" style="text-align: center">
+            <ul class="pagination" style="margin: 0">
+                <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
+                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">1</a></li>
+                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">2</a></li>
+                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">3</a></li>
+                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">4</a></li>
+                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">5</a></li>
+                <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
+            </ul>
+        </nav>
 </div>
+
 
 
 <!-- 系统管理：用户信息维护-->
@@ -168,9 +180,6 @@
             </tbody>
         </table>
 
-    </div>
-    <div class="row">
-        <button class="btn btn-primary">添加新用户</button>
     </div>
 </div>
 <!-- 增加新的页面div-->
