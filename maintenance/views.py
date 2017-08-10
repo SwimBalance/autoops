@@ -24,6 +24,46 @@ def login_auth(f):
     return decorator
 
 
+
+# 登录
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        print("post method!")
+        username = request.POST.get('userid', '')
+        password = request.POST.get('password', '')
+        print("==xxxx==")
+        print(username, password)
+        print("==xxxx==")
+        cursor = connection.cursor()
+        sqlsatement = "SELECT password,groups FROM accinfo WHERE username=%r" % username.upper()
+        # print(sqlsatement)
+        cursor.execute(sqlsatement)
+        dpass = cursor.fetchone()
+        group = dpass[1]
+        print("message=",dpass,"dpass1=", dpass[1])
+        if dpass is None:
+            return HttpResponseRedirect(reverse('APP:login'))
+        else:
+            dpass = dpass[0]
+            print(dpass)
+            if password == dpass:
+                print("Authentication Success!")
+                # return HttpResponse("Hello, world. You're at the login index.")
+                response = HttpResponseRedirect(reverse('APP:index'))
+                # 使用cookie存储用户登录的信息
+                response.set_cookie('loginname', username)
+                response.set_cookie('group',group)
+                response.set_cookie('logintime', datetime.datetime.now())
+                return response
+            else:
+                print("Authentication Failed!")
+            return HttpResponseRedirect(reverse('APP:login'))
+    else:
+        print("get method")
+    return render(request, 'maintenance/login.html')
+
+
 #@login_auth
 def index(request):
     currentuser = request.COOKIES.get('loginname')
@@ -135,8 +175,10 @@ def get_tomcat_data(request):
         startpos = (page_number - 1) * maxline
         cursor.execute(
             'select id, machine, tomcathome, ipaddress, description, status,startwait,stopwait,checkwait from tomcatdata LIMIT %d, %d;' % (startpos, maxline))
-        data = dictfetchall(cursor)
-    return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+        results = dictfetchall(cursor)
+    data = {'page': page_number, 'results': results, 'lines': len(results)}
+    return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
+
 
 # 展示auditlog列表
 def get_auditlog_data(request):
@@ -226,51 +268,24 @@ def save_user_data(request):
     sqlsatement = "update accinfo set username='%s',password='%s',email='%s',privilege=%s,groups='%s' WHERE username='%s'" % (user_username,user_password,user_email,user_privilege,user_group,user_username)
     with connection.cursor() as cursor:
         cursor.execute(sqlsatement)
-    return JsonResponse('dddd', safe=False, json_dumps_params={'ensure_ascii': False})
+        return JsonResponse('保存成功', safe=False, json_dumps_params={'ensure_ascii': False})
 
-
-
-
+# 系统管理：用户信息维护：添加用户信息
+def add_user_data(request):
+    user_username = request.GET.get('username')
+    user_password = request.GET.get('password')
+    user_email = request.GET.get('email')
+    user_privilege = request.GET.get('privilege')
+    user_group = request.GET.get('group')
+    print(user_username + user_password + user_email + user_privilege + user_group)
+    print('******************************')
+    sqlsatement = "insert into accinfo(username,password,email,privilege,groups) VALUES ('%s','%s','%s',%s,'%s')" % (
+        user_username, user_password, user_email, user_privilege, user_group)
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+    return JsonResponse('添加成功', safe=False, json_dumps_params={'ensure_ascii': False})
 
 
 def get_oracle_data(request):
     return JsonResponse([{'message': 'ORACLE'}], safe=False)
 
-
-# 登录
-@csrf_exempt
-def login(request):
-    if request.method == 'POST':
-        print("post method!")
-        username = request.POST.get('userid', '')
-        password = request.POST.get('password', '')
-        print("==xxxx==")
-        print(username, password)
-        print("==xxxx==")
-        cursor = connection.cursor()
-        sqlsatement = "SELECT password,groups FROM accinfo WHERE username=%r" % username.upper()
-        # print(sqlsatement)
-        cursor.execute(sqlsatement)
-        dpass = cursor.fetchone()
-        group = dpass[1]
-        print("message=",dpass,"dpass1=", dpass[1])
-        if dpass is None:
-            return HttpResponseRedirect(reverse('APP:login'))
-        else:
-            dpass = dpass[0]
-            print(dpass)
-            if password == dpass:
-                print("Authentication Success!")
-                # return HttpResponse("Hello, world. You're at the login index.")
-                response = HttpResponseRedirect(reverse('APP:index'))
-                # 使用cookie存储用户登录的信息
-                response.set_cookie('loginname', username)
-                response.set_cookie('group',group)
-                response.set_cookie('logintime', datetime.datetime.now())
-                return response
-            else:
-                print("Authentication Failed!")
-            return HttpResponseRedirect(reverse('APP:login'))
-    else:
-        print("get method")
-    return render(request, 'maintenance/login.html')

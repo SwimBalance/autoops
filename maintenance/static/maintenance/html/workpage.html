@@ -1,16 +1,16 @@
 <!-- 主页工作页-->
 <div id="home_workpage">
-    <div class="row" >
-        <div class="items"  >1</div>
-        <div class="items"  >2</div>
-        <div class="items"  >3</div>
-        <div class="items"  >4</div>
+    <div class="row">
+        <div class="items">1</div>
+        <div class="items">2</div>
+        <div class="items">3</div>
+        <div class="items">4</div>
     </div>
     <div class="row">
-        <div class="items"  >1</div>
-        <div class="items"  >2</div>
-        <div class="items"  >3</div>
-        <div class="items"  >4</div>
+        <div class="items">1</div>
+        <div class="items">2</div>
+        <div class="items">3</div>
+        <div class="items">4</div>
     </div>
 </div>
 <!-- tomcat工作页-->
@@ -24,14 +24,15 @@
                 </ol>
             </div>
             <!--<div class="row"> -->
-                <div class="col-lg-5" style="padding: 1px">
-                    <div class="input-group">
-                        <input id="search_tom" type="text" class="form-control" placeholder="IP/服务器名称" onkeydown="if(event.keyCode==13) {searchtomcat()}">
-                        <span class="input-group-btn">
+            <div class="col-lg-5" style="padding: 1px">
+                <div class="input-group">
+                    <input id="search_tom" type="text" class="form-control" placeholder="IP/服务器名称"
+                           onkeydown="if(event.keyCode==13) {searchtomcat()}">
+                    <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchtomcat()">查找</button>
                         </span>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
             <!--</div> /.row -->
             <table class="table table-bordered table-hover table-condensed">
                 <!--<caption><strong>Tomcat应用服务器清单</strong></caption> -->
@@ -48,19 +49,20 @@
                 </tr>
                 </thead>
                 <tbody class="text">
-                    <!--load data form js:$("ul[id='servicemgr'] li").click(function ()-->
+                <!--load data form js:$("ul[id='servicemgr'] li").click(function ()-->
                 </tbody>
             </table>
         </div>
-        <nav id="preandnext" style="text-align: center">
+        <nav class="preandnext" style="text-align: center">
+            <label hidden></label>
             <ul class="pagination" style="margin: 0">
-                <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
-                <li onclick="page(this)"><a href="javascript:void(0)">1</a></li>
-                <li onclick="page(this)"><a href="javascript:void(0)">2</a></li>
-                <li onclick="page(this)"><a href="javascript:void(0)">3</a></li>
-                <li onclick="page(this)"><a href="javascript:void(0)">4</a></li>
-                <li onclick="page(this)"><a href="javascript:void(0)">5</a></li>
-                <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
+                <li onclick="create_page(this)" value="0"><a href="javascript:void(0)">&laquo;</a></li>
+                <li onclick="create_page(this)" value="1"><a href="javascript:void(0)">1</a></li>
+                <li onclick="create_page(this)" value="2"><a href="javascript:void(0)">2</a></li>
+                <li onclick="create_page(this)" value="3"><a href="javascript:void(0)">3</a></li>
+                <li onclick="create_page(this)" value="4"><a href="javascript:void(0)">4</a></li>
+                <li onclick="create_page(this)" value="5"><a href="javascript:void(0)">5</a></li>
+                <li onclick="create_page(this)" value="99999999"><a href="javascript:void(0)">&raquo;</a></li>
             </ul>
         </nav>
     </div>
@@ -100,22 +102,23 @@
 
 <!-- 报表工作页-->
 <div id="auditlog_workpage">
-    <div class="row" >
+    <div class="row">
         <div class="col-lg-7" style="padding: 0px">
-                <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li class="active">Audit Log</li>
-                </ol>
-            </div>
-            <!--<div class="row"> -->
-                <div class="col-lg-5" style="padding: 1px">
-                    <div class="input-group">
-                        <input id="search_tom" type="text" class="form-control" placeholder="操作人员/操作类型/服务器名称" onkeydown="if(event.keyCode==13) {searchauditlog()}">
-                        <span class="input-group-btn">
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li class="active">Audit Log</li>
+            </ol>
+        </div>
+        <!--<div class="row"> -->
+        <div class="col-lg-5" style="padding: 1px">
+            <div class="input-group">
+                <input id="search_tom" type="text" class="form-control" placeholder="操作人员/操作类型/服务器名称"
+                       onkeydown="if(event.keyCode==13) {searchauditlog()}">
+                <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchauditlog()">查找</button>
                         </span>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
         <table class="table table-bordered table-hover table-condensed">
             <thead>
             <tr>
@@ -132,39 +135,39 @@
             </tbody>
         </table>
     </div>
-        <nav id="page_log" style="text-align: center">
-            <ul class="pagination" style="margin: 0">
-                <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
-                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">1</a></li>
-                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">2</a></li>
-                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">3</a></li>
-                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">4</a></li>
-                <li onclick="page_auditlog(this)"><a href="javascript:void(0)">5</a></li>
-                <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
-            </ul>
-        </nav>
+    <nav id="page_log" style="text-align: center">
+        <ul class="pagination" style="margin: 0">
+            <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
+            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">1</a></li>
+            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">2</a></li>
+            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">3</a></li>
+            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">4</a></li>
+            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">5</a></li>
+            <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
+        </ul>
+    </nav>
 </div>
-
 
 
 <!-- 系统管理：用户信息维护-->
 <div id="usermanagement_workpage">
-    <div class="row" >
+    <div class="row">
         <div class="col-lg-7" style="padding: 0px">
-                <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li class="active">User Management</li>
-                </ol>
-            </div>
-            <!--<div class="row"> -->
-                <div class="col-lg-5" style="padding: 1px">
-                    <div class="input-group">
-                        <input id="search_tom" type="text" class="form-control" placeholder="工号/组" onkeydown="if(event.keyCode==13) {searchuser()}">
-                        <span class="input-group-btn">
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li class="active">User Management</li>
+            </ol>
+        </div>
+        <!--<div class="row"> -->
+        <div class="col-lg-5" style="padding: 1px">
+            <div class="input-group">
+                <input id="search_tom" type="text" class="form-control" placeholder="工号/组"
+                       onkeydown="if(event.keyCode==13) {searchuser()}">
+                <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchauditlog()">查找</button>
                         </span>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
         <table class="table table-bordered table-hover table-condensed">
             <thead>
             <tr>
@@ -186,27 +189,35 @@
 
 <!-- 常用工具：系统健康检查-->
 <div id="systemhealthcheck_workpage">
-    <div class="row" >
+    <div class="row">
         <div class="col-lg-8" style="border: solid lavender 1px">1</div>
-        <div class="col-lg-4" style="border: solid lavender 1px" >2</div>
+        <div class="col-lg-4" style="border: solid lavender 1px">2</div>
     </div>
     <div class="row">
         <div class="col-lg-8" style="border: solid red 1px;min-height: 500px">
-            <div id="weblayer"  class="row" style="height: 90%" >
-                <div class="col-lg-2" style="border: solid lavender 1px"> WEB Layer</div>
-                 <div class="col-lg-10"><i class="fa fa-database fa-5x" style="color: green"></i><small> APPServer1</small> </div>
+            <div id="weblayer" class="row" style="height: 90%">
+                <div class="col-lg-2"> WEB Layer</div>
+                <div class="col-lg-10"><i class="fa fa-desktop fa-4x" style="color: green"></i>
+                    <small> APPServer1</small>
+                </div>
             </div>
-            <div id="applayer" class="row" >
-                <div class="col-lg-2" style="border: solid lavender 1px"> APP Layer</div>
-                <div class="col-lg-5"><i class="fa fa-database fa-5x" style="color: green"></i><small> WEBServer1</small> </div>
-                <div class="col-lg-5"><i class="fa fa-database fa-5x" style="color: green"></i><small> WEBServer2</small> </div>
+            <div id="applayer" class="row">
+                <div class="col-lg-2"> APP Layer</div>
+                <div class="col-lg-5"><i class="fa fa-server fa-4x" style="color: green"></i>
+                    <small> WEBServer1</small>
+                </div>
+                <div class="col-lg-5"><i class="fa fa-server fa-4x" style="color: green"></i>
+                    <small> WEBServer2</small>
+                </div>
             </div>
-            <div id="dblayer" class="row" style="bottom: 0px" >
-                <div class="col-lg-2" style="border: solid lavender 1px"> <h4>DB Layer</h4></div>
-                <div class="col-lg-10"><i class="fa fa-database fa-5x" style="color: green"></i><small> DBServer</small> </div>
+            <div id="dblayer" class="row" style="bottom: 0px">
+                <div class="col-lg-2"><h4>DB Layer</h4></div>
+                <div class="col-lg-10"><i class="fa fa-database fa-4x" style="color: green"></i>
+                    <small> DBServer</small>
+                </div>
             </div>
         </div>
-        <div class="col-lg-4" style="border: solid lavender 1px;min-height: 500px" >2</div>
+        <div class="col-lg-4" style="border: solid lavender 1px;min-height: 500px">2</div>
     </div>
 </div>
 

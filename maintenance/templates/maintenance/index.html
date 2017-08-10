@@ -270,16 +270,16 @@
             </div>
             <div class="modal-body">
                 <label>用户名</label>
-                 <input id="username" type="text" class="form-control" name="email"
+                <input id="add_username" type="text" class="form-control" name="email"
                        value="">
                 <label>用户密码</label>
-                <input id="password" type="password" class="form-control" name="email"
+                <input id="add_password" type="password" class="form-control" name="email"
                        placeholder="Password">
                 <label>邮箱</label>
-                <input id="email" type="email" class="form-control" name="email" placeholder="Email">
-                <div  >
-                    <label >用户权限</label>
-                    <select  class="form-control">
+                <input id="add_email" type="email" class="form-control" name="email" placeholder="Email">
+                <div>
+                    <label>用户权限</label>
+                    <select id="add_privilege" class="form-control">
                         <option>1</option>
                         <option>2</option>
                         <option>3</option>
@@ -291,21 +291,25 @@
                     </select>
                 </div>
                 <div>
-                    <label >用户组</label>
-                    <select class="form-control">
+                    <label>用户组</label>
+                    <select id="add_group" class="form-control">
                         <option>admin</option>
                         <option>normal</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">确认添加</button>
-                <button id="messagemodal3" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
+                <button id="saveuser" type="button" class="btn btn-default" onclick="saveuser(this)">确认添加
+                </button>
+                <button id="messagemodal3" type="button" class="btn btn-primary" onclick="opt_updata(this)"
+                        data-dismiss="modal">取消
+                </button>
             </div>
         </div>
     </div>
 </div>
 <!--模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:END-->
+
 
 
 
