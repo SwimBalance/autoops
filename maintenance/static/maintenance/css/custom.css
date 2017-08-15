@@ -1,8 +1,57 @@
-.items{
-    width:20%;
-    margin:2%;
+.items {
+    width: 20%;
+    margin: 2%;
     height: 220px;
     border: solid 1px bisque;
     float: left
 }
 
+#weblayer i:hover {
+    border: solid 2px #dc1220;
+    position: relative;
+}
+
+#applayer i:hover {
+    border: solid 2px #dc1220;
+    position: relative;
+}
+
+#dblayer i:hover {
+    border: solid 2px #dc1220;
+    position: relative;
+}
+
+.glyphicon-ok-sign {
+    color: green
+}
+
+.glyphicon-exclamation-sign {
+    color: crimson;
+}
+
+.glyphicon-remove-sign {
+    color: darkgray
+}
+
+#weblayer i input {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#applayer i input {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#dblayer i input {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: default;
+}

@@ -4,34 +4,28 @@
     {% load static %}
     <title>自动化运维</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- 引入 Bootstrap -->
     <link href="{% static 'maintenance/bootstrap3.3.7/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'maintenance/bootstrap-select/css/bootstrap-select.css' %}" rel="stylesheet">
+
     <link href="{% static 'maintenance/fontawesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
     <link href="{% static 'maintenance/css/custom.css' %}" rel="stylesheet">
     <meta charset="UTF-8">
     <!-- 导入Jquery文件-->
     <script src="{% static 'maintenance/js/jquery-3.2.1.min.js' %}"></script>
     <!--导入bootstrap中的js 插件-->
     <script src="{% static 'maintenance/bootstrap3.3.7/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'maintenance/bootstrap-select/js/bootstrap-select.js' %}"></script>
+
+
     <!--导入自己的js文件-->
     <script src="{% static 'maintenance/js/show_workpage.js' %}"></script>
-    <style>
-        .glyphicon-ok-sign {
-            color: green
-        }
-
-        .glyphicon-exclamation-sign {
-            color: crimson;
-        }
-
-        .glyphicon-remove-sign {
-            color: darkgray
-        }
-    </style>
 </head>
-<body >
-<div class=" container-fluid" >
-    <div class="row"  >
+<body>
+<div class=" container-fluid">
+    <div class="row">
         <div class="col-lg-12" style="background-color: #f8f8f8;height: 50px;border:solid 1px #e7e7e7">
             <span style="font-size: 18px;line-height: 50px;color: #888888;">AUTO OPERATION
                 <small>自动化运维平台</small>
@@ -39,15 +33,17 @@
                  <!--bar user dropdown list -->
                     <li class="dropdown">
                             <span class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <span class="glyphicon glyphicon-user" style="color: #2aabd2"><small id="welcome"> 欢迎用户 <i id="welcomeuser">{{ user }}</i></small><span class="caret"></span></span>
+                                    <span class="glyphicon glyphicon-user" style="color: #2aabd2"><small id="welcome"> 欢迎用户 <i
+                                            id="welcomeuser">{{ user }}</i></small><span class="caret"></span></span>
                             </span>
                             <ul class="dropdown-menu" style="text-indent: 0.1em">
-                                <li id="changepwd"><a href="javascript:void(0)"><span class="glyphicon glyphicon-cog"></span> 修改密码</a></li>
-                                <li id="logout"><a href="javascript:void(0)"><span class="glyphicon glyphicon-log-out"></span> 退出</a></li>
-                                 <!--add new menu -->
+                                <li id="changepwd"><a href="javascript:void(0)"><span
+                                        class="glyphicon glyphicon-cog"></span> 修改密码</a></li>
+                                <li id="logout"><a href="javascript:void(0)"><span
+                                        class="glyphicon glyphicon-log-out"></span> 退出</a></li>
+                                <!--add new menu -->
                             </ul>
                     </li>
-                <!--add new nav bar -->
                 </ul>
             </span>
         </div>
@@ -88,14 +84,15 @@
         <div class="col-lg-2" style="background-color: #f8f8f8;min-height: 570px;margin: 0;padding: 0">
             <ul id="leftnav" class="nav nav-pills nav-stacked" style="margin: 0;padding: 0">
 
-                <li id="home" role="presentation" class="" style="border-bottom: solid 1px #e7e7e7"><a href="javascript:void(0)"><span class="glyphicon glyphicon-home"></span> 主页</a></li>
+                <li id="home" role="presentation" class="" style="border-bottom: solid 1px #e7e7e7"><a
+                        href="javascript:void(0)"><span class="glyphicon glyphicon-home"></span> 主页</a></li>
 
                 <li class="" style="border-bottom: solid 1px #e7e7e7">
                     <a href="#setup" class="nav-header collapsed " data-toggle="collapse">
                         <i class="glyphicon glyphicon-cloud "></i> 服务器部署
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="setup" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
+                    <ul id="setup" class="nav nav-list collapse" style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-user"></i> 数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> 中间件</a></li>
                     </ul>
@@ -106,7 +103,7 @@
                         <i class="glyphicon glyphicon-cog"></i> 软件参数配置
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="config" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
+                    <ul id="config" class="nav nav-list collapse" style="list-style: none;text-indent: 1em">
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> Oracle数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> MySQL数据库</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> Tomcat</a></li>
@@ -121,11 +118,16 @@
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
                     <ul id="servicemgr" class="nav nav-list collapse " style="list-style: none;text-indent: 1em">
-                        <li id="oras" role="presentation"><a href="javascript:void(0)" ><i class="glyphicon glyphicon-warning-sign"></i>Oracle服务启停</a></li>
-                        <li id="mysqls" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i>MySQL服务启停</a></li>
-                        <li id="toms" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Tomcat服务启停</a></li>
-                        <li id="apache" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Apache服务启停</a></li>
-                        <li id="nginx" role="presentation"><a href="javascript:void(0)"><i class="glyphicon glyphicon-warning-sign"></i> Nginx服务启停</a></li>
+                        <li id="oras" role="presentation"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-warning-sign"></i>Oracle服务启停</a></li>
+                        <li id="mysqls" role="presentation"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-warning-sign"></i>MySQL服务启停</a></li>
+                        <li id="toms" role="presentation"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-warning-sign"></i> Tomcat服务启停</a></li>
+                        <li id="apache" role="presentation"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-warning-sign"></i> Apache服务启停</a></li>
+                        <li id="nginx" role="presentation"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-warning-sign"></i> Nginx服务启停</a></li>
                     </ul>
                 </li>
 
@@ -134,11 +136,12 @@
                         <i class="glyphicon glyphicon-wrench"></i> 常用工具
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="tools" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
+                    <ul id="tools" class="nav nav-list collapse" style="list-style: none;text-indent: 1em">
                         <li class="active"><a href="#"><i class="glyphicon glyphicon-time"></i> CRONTAB管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-file"></i> 脚本管理</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> 数据库性能分析</a></li>
-                        <li id="systemhealthcheck"><a href="javascript:void(0)"><i class="glyphicon glyphicon-eye-open"></i> 系统健康检查</a></li>
+                        <li id="systemhealthcheck"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-eye-open"></i> 系统健康检查</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-user"></i> 系统日志查看</a></li>
                     </ul>
                 </li>
@@ -148,8 +151,9 @@
                         <i class="glyphicon glyphicon-dashboard"></i> 报表
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="report" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
-                        <li id="auditlog" class="active"><a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i> 用户操作日志</a></li>
+                    <ul id="report" class="nav nav-list collapse" style="list-style: none;text-indent: 1em">
+                        <li id="auditlog" class="active"><a href="javascript:void(0)"><i
+                                class="glyphicon glyphicon-user"></i> 用户操作日志</a></li>
                     </ul>
                 </li>
 
@@ -158,8 +162,9 @@
                         <i class="glyphicon glyphicon-compressed "></i> 系统管理
                         <span class="pull-right glyphicon glyphicon-chevron-toggle"></span>
                     </a>
-                    <ul id="systemsetting" class="nav nav-list collapse"  style="list-style: none;text-indent: 1em">
-                        <li id="usermanagement" ><a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i> 用户信息维护</a></li>
+                    <ul id="systemsetting" class="nav nav-list collapse" style="list-style: none;text-indent: 1em">
+                        <li id="usermanagement"><a href="javascript:void(0)"><i class="glyphicon glyphicon-user"></i>
+                            用户信息维护</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-th-list"></i> 应用系统信息维护</a></li>
                         <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-asterisk"></i> 服务器信息维护</a></li>
                     </ul>
@@ -170,157 +175,18 @@
         </div>
         <div class="col-lg-10">
             <div id="workpage" style="width: 98%;margin-left: 2px"></div>
-            <!-- 模态框（Modal）:tomcat操作弹出窗口界面 :START-->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                 aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalLabel">操作结果</h4>
-                        </div>
-                        <div class="modal-body" id="message"></div>
-                        <div class=" progress ">
-                            <div id="progstatus" class="progress-bar"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-            <!-- 模态框（Modal）:tomcat操作弹出窗口界面 :END-->
-
-            <!-- 模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:START-->
-            <div class="modal fade" id="userdelmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                 aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <span class="glyphicon glyphicon-alert" style="color: red"><small> 请仔细核对要删除的用户名</small></span>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body" id="messageuserdel"></div>
-                        <div class="modal-footer">
-                            <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">确认删除</button>
-                            <button id="messagemodal1" type="button" class="btn btn-primary" data-dismiss="modal" onclick="refreshdata()">取消</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:END-->
-
-
-            <!-- 模态框（Modal）:用户信息维护界面：用户修改时的确认窗口:START-->
-            <div class="modal fade" id="userchangemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                 aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <span class="glyphicon glyphicon-alert" style="color: red"><small> 请修改您的信息！</small></span>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body" >
-                            <label>用户名</label>
-                            <input id="username" type="text" disabled="disabled" class="form-control" name="email"
-                                   value="">
-                            <label>用户密码</label>
-                            <input id="password" type="password" class="form-control" name="email"
-                                   placeholder="Password">
-                            <label>邮箱</label>
-                            <input id="email" type="email" class="form-control" name="email" placeholder="Email">
-                            <div  >
-                                <label >用户权限</label>
-                                <select id="privilege" class="form-control">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                    <option>6</option>
-                                    <option>7</option>
-                                    <option>8</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label >用户组</label>
-                                <select id="group" class="form-control">
-                                    <option>admin</option>
-                                    <option>normal</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button  id="savemess" onclick="opt_save(this)" type="button" class="btn btn-default">保存修改</button>
-                            <button  id="messagemodal2" type="button"  onclick="opt_updata(this)" class="btn btn-primary" data-dismiss="modal">取消</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-<!--模态框（Modal）:用户信息维护界面：用户修改时的确认窗口:END-->
-
-<!-- 模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:START-->
-<div class="modal fade" id="addusermodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="glyphicon glyphicon-alert" style="color: red"><middle> 提交前请仔细核对新增用户信息</middle></span>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <label>用户名</label>
-                <input id="add_username" type="text" class="form-control" name="email"
-                       value="">
-                <label>用户密码</label>
-                <input id="add_password" type="password" class="form-control" name="email"
-                       placeholder="Password">
-                <label>邮箱</label>
-                <input id="add_email" type="email" class="form-control" name="email" placeholder="Email">
-                <div>
-                    <label>用户权限</label>
-                    <select id="add_privilege" class="form-control">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                    </select>
-                </div>
-                <div>
-                    <label>用户组</label>
-                    <select id="add_group" class="form-control">
-                        <option>admin</option>
-                        <option>normal</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="saveuser" type="button" class="btn btn-default" onclick="saveuser(this)">确认添加
-                </button>
-                <button id="messagemodal3" type="button" class="btn btn-primary" onclick="opt_updata(this)"
-                        data-dismiss="modal">取消
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:END-->
-
-
-
-
-
-
+            <div id="modal_page"></div>
         </div>
     </div>
     <div class="page-footer">
+
     </div>
+
 </div>
 </body>
 <script>
+    $.ajaxSetup({
+        cache: false //关闭AJAX相应的缓存
+    });
 </script>
 </html>

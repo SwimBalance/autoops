@@ -1,0 +1,212 @@
+<!-- 模态框（Modal）:tomcat操作弹出窗口界面 :START-->
+<div class="modal fade" id="myTomcatModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">操作结果</h4>
+            </div>
+            <div class="modal-body" id="message"></div>
+            <div class=" progress ">
+                <div id="progstatus" class="progress-bar"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）:tomcat操作弹出窗口界面 :END-->
+
+<!-- 模态框（Modal）:oracle操作弹出窗口界面 :START-->
+<div class="modal fade" id="myOracleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">操作结果</h4>
+            </div>
+            <div class="modal-body" id="message"></div>
+            <div class=" progress ">
+                <div id="progstatus" class="progress-bar"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）:oracle操作弹出窗口界面 :END-->
+
+<!-- 模态框（Modal）:apache操作弹出窗口界面 :START-->
+<div class="modal fade" id="myApacheModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Apache操作结果</h4>
+            </div>
+            <div class="modal-body" id="apache_message"></div>
+            <div class=" progress ">
+                <div id="progstatus" class="progress-bar"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）:apache操作弹出窗口界面 :END-->
+
+<!-- 模态框（Modal）:nginx操作弹出窗口界面 :START-->
+<div class="modal fade" id="myNginxModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Nginx操作结果</h4>
+            </div>
+            <div class="modal-body" id="nginx_message"></div>
+            <div class=" progress ">
+                <div id="progstatus" class="progress-bar"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）:nginx操作弹出窗口界面 :END-->
+<!-- 模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:START-->
+<div class="modal fade" id="userdelmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="glyphicon glyphicon-alert" style="color: red"><small> 请仔细核对要删除的用户名</small></span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body" id="messageuserdel"></div>
+            <div class="modal-footer">
+                <button id="deleteuser" type="button" class="btn btn-default" onclick="deleteuser(this)">
+                    确认删除
+                </button>
+                <button id="messagemodal1" type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="refreshdata()">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:END-->
+
+
+<!-- 模态框（Modal）:用户信息维护界面：用户修改时的确认窗口:START-->
+<div class="modal fade" id="userchangemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="glyphicon glyphicon-alert" style="color: red"><small> 请修改您的信息！</small></span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>用户名</label>
+                <input id="username" type="text" disabled="disabled" class="form-control" name="email"
+                       value="">
+                <label>用户密码</label>
+                <input id="password" type="password" class="form-control" name="email"
+                       placeholder="Password">
+                <label>邮箱</label>
+                <input id="email" type="email" class="form-control" name="email" placeholder="Email">
+                <div>
+                    <label>用户权限</label>
+                    <select id="privilege" class="form-control">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </div>
+                <div>
+                    <label>用户组</label>
+                    <select id="group" class="form-control">
+                        <option>admin</option>
+                        <option>normal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="savemess" onclick="opt_save(this)" type="button" class="btn btn-default">保存修改
+                </button>
+                <button id="messagemodal2" type="button" onclick="opt_updata(this)" class="btn btn-primary"
+                        data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框（Modal）:用户信息维护界面：用户修改时的确认窗口:END-->
+
+<!-- 模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:START-->
+<div class="modal fade" id="addusermodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="glyphicon glyphicon-alert" style="color: red"><middle> 提交前请仔细核对新增用户信息</middle></span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label>用户名</label>
+                <input id="add_username" type="text" class="form-control" name="email"
+                       value="">
+                <label>用户密码</label>
+                <input id="add_password" type="password" class="form-control" name="email"
+                       placeholder="Password">
+                <label>邮箱</label>
+                <input id="add_email" type="email" class="form-control" name="email" placeholder="Email">
+                <div>
+                    <label>用户权限</label>
+                    <select id="add_privilege" class="form-control">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                    </select>
+                </div>
+                <div>
+                    <label>用户组</label>
+                    <select id="add_group" class="form-control">
+                        <option>admin</option>
+                        <option>normal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveuser" type="button" class="btn btn-default" onclick="saveuser(this)">确认添加
+                </button>
+                <button id="messagemodal3" type="button" class="btn btn-primary" onclick="opt_updata(this)"
+                        data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框（Modal）:用户信息维护界面：添加新用户弹出窗口:END-->

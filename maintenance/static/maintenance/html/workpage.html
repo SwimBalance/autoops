@@ -13,7 +13,7 @@
         <div class="items">4</div>
     </div>
 </div>
-<!-- tomcat工作页-->
+<!-- 服务启停：tomcat工作页-->
 <div id="tom_workpage">
     <div style="border: 1px;">
         <div class="row">
@@ -54,29 +54,28 @@
             </table>
         </div>
         <nav class="preandnext" style="text-align: center">
-            <label hidden></label>
-            <ul class="pagination" style="margin: 0">
-                <li onclick="create_page(this)" value="0"><a href="javascript:void(0)">&laquo;</a></li>
-                <li onclick="create_page(this)" value="1"><a href="javascript:void(0)">1</a></li>
-                <li onclick="create_page(this)" value="2"><a href="javascript:void(0)">2</a></li>
-                <li onclick="create_page(this)" value="3"><a href="javascript:void(0)">3</a></li>
-                <li onclick="create_page(this)" value="4"><a href="javascript:void(0)">4</a></li>
-                <li onclick="create_page(this)" value="5"><a href="javascript:void(0)">5</a></li>
-                <li onclick="create_page(this)" value="99999999"><a href="javascript:void(0)">&raquo;</a></li>
+            <label hidden id="curnpage"></label>
+            <ul class="pager">
+                <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
+                    <strong> </strong> 页</h5></label>
+                <li class="previous" onclick="createTomcatPage(this)" value="0"><a href="#"><span
+                        aria-hidden="true">&larr;</span> 上一页</a></li>
+                <li class="next" onclick="createTomcatPage(this)" value="9999"><a href="#">下一页 <span
+                        aria-hidden="true">&rarr;</span></a></li>
             </ul>
         </nav>
     </div>
 </div>
-<!-- oracle工作页-->
+<!-- 服务启停：oracle工作页-->
 <div id="ora_workpage">
     <div style="height: 100%;border: 1px;">
         <div class="row">
             <div class="col-lg-6" style="float: right">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
+                    <input id="search_ora" type="text" class="form-control" placeholder="Search for...">
                     <span class="input-group-btn">
-        <button class="btn btn-default" type="button">查找</button>
-      </span>
+                        <button class="btn btn-default" type="button">查找</button>
+                    </span>
                 </div><!-- /input-group -->
             </div><!-- /.col-lg-6 -->
         </div><!-- /.row -->
@@ -88,14 +87,128 @@
                 <th>IP</th>
                 <th>主机名</th>
                 <th>SID</th>
+                <th>状态</th>
+                <th>检查</th>
+                <th>开启</th>
+                <th>停止</th>
             </tr>
             </thead>
             <tbody class="text">
-
             </tbody>
         </table>
+        <nav class="preandnext" style="text-align: center">
+            <label hidden id="curnpage"></label>
+            <ul class="pager">
+                <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
+                    <strong> </strong> 页</h5></label>
+                <li class="previous" onclick="createOraclePage(this)" value="0"><a href="#"><span
+                        aria-hidden="true">&larr;</span> 上一页</a></li>
+                <li class="next" onclick="createOraclePage(this)" value="9999"><a href="#">下一页 <span
+                        aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
     </div>
-    <div id="oracle_mes" class="alert alert-info alert-dismissible" role="alert">
+</div>
+<!-- 服务启停：apache工作页-->
+<div id="apache_workpage">
+    <div style="border: 1px;">
+        <div class="row">
+            <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">apache</li>
+                </ol>
+            </div>
+            <!--<div class="row"> -->
+            <div class="col-lg-5" style="padding: 1px">
+                <div class="input-group">
+                    <input id="search_apache" type="text" class="form-control" placeholder="IP/服务器名称"
+                           onkeydown="if(event.keyCode==13) {searchtomcat()}">
+                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="searchapache()">查找</button>
+                        </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+            <!--</div> /.row -->
+            <table class="table table-bordered table-hover table-condensed">
+                <!--<caption><strong>Tomcat应用服务器清单</strong></caption> -->
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>IP</th>
+                    <th>主机名</th>
+                    <th>概要</th>
+                    <th>状态</th>
+                    <th>检查</th>
+                    <th>开启</th>
+                    <th>停止</th>
+                </tr>
+                </thead>
+                <tbody class="text">
+                <!--load data form js:$("ul[id='servicemgr'] li").click(function ()-->
+                </tbody>
+            </table>
+        </div>
+        <nav class="preandnext" style="text-align: center">
+            <label hidden id="curnpage"></label>
+            <ul class="pager">
+                <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
+                    <strong> </strong> 页</h5></label>
+                <li class="previous" onclick="createApachePage(this)" value="0"><a href="#"><span
+                        aria-hidden="true">&larr;</span> 上一页</a></li>
+                <li class="next" onclick="createApachePage(this)" value="9999"><a href="#">下一页 <span
+                        aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-- 服务启停：nginx工作页-->
+<div id="nginx_workpage">
+    <div style="border: 1px;">
+        <div class="row">
+            <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">nginx</li>
+                </ol>
+            </div>
+            <div class="col-lg-5" style="padding: 1px">
+                <div class="input-group">
+                    <input id="search_nginx" type="text" class="form-control" placeholder="IP/服务器名称"
+                           onkeydown="if(event.keyCode==13) {searchnginx()}">
+                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="searchnginx()">查找</button>
+                        </span>
+                </div>
+            </div>
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>IP</th>
+                    <th>主机名</th>
+                    <th>概要</th>
+                    <th>状态</th>
+                    <th>检查</th>
+                    <th>开启</th>
+                    <th>停止</th>
+                </tr>
+                </thead>
+                <tbody class="text">
+                </tbody>
+            </table>
+        </div>
+        <nav class="preandnext" style="text-align: center">
+            <label hidden id="curnpage"></label>
+            <ul class="pager">
+                <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
+                    <strong> </strong> 页</h5></label>
+                <li class="previous"  id='test123' onclick="createNginxPage(this)" value="0"><a href="#"><span
+                        aria-hidden="true">&larr;</span> 上一页</a></li>
+                <li class="next" onclick="createNginxPage(this)" value="9999"><a href="#">下一页 <span
+                        aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -135,15 +248,15 @@
             </tbody>
         </table>
     </div>
-    <nav id="page_log" style="text-align: center">
-        <ul class="pagination" style="margin: 0">
-            <li onclick="previousPage(this)"><a href="javascript:void(0)">&laquo;</a></li>
-            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">1</a></li>
-            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">2</a></li>
-            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">3</a></li>
-            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">4</a></li>
-            <li onclick="page_auditlog(this)"><a href="javascript:void(0)">5</a></li>
-            <li onclick="nextPage(this)"><a href="javascript:void(0)">&raquo;</a></li>
+    <nav class="preandnext" style="text-align: center">
+        <label hidden id="curnpage"></label>
+        <ul class="pager">
+            <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共 <strong> </strong> 页
+            </h5></label>
+            <li class="previous" onclick="create_page(this)" value="0"><a href="#"><span
+                    aria-hidden="true">&larr;</span> 上一页</a></li>
+            <li class="next" onclick="create_page(this)" value="9999"><a href="#">下一页 <span
+                    aria-hidden="true">&rarr;</span></a></li>
         </ul>
     </nav>
 </div>
@@ -190,34 +303,184 @@
 <!-- 常用工具：系统健康检查-->
 <div id="systemhealthcheck_workpage">
     <div class="row">
-        <div class="col-lg-8" style="border: solid lavender 1px">1</div>
-        <div class="col-lg-4" style="border: solid lavender 1px">2</div>
+        <div style="padding-top: 3px">
+            <form class="form-inline">
+                <div class="col-lg-7">
+                    <div class="form-group">
+                        <select id="systemlist" class="form-control" onchange="systemchanged(this)">
+                            <option value="0">选择要检查的应用系统</option>
+                            <!-- 加载应用系统清单-->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="machinelist" class="show-menu-arrow form-control" title="选择要检查的服务器" multiple
+                                onchange="machinechange(this)">
+
+                            <!-- 加载服务器清单-->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="form-group col-lg-4">
+                        <button id='startchecksystem' type="submit" class="btn btn-primary">开始检查</button>
+                    </div>
+
+                    <div class="form-group col-lg-4">
+                        <button type="submit" class="btn btn-primary">停止服务</button>
+                    </div>
+
+                    <div class="form-group col-lg-4">
+                        <button type="submit" class="btn btn-primary">启动服务</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-lg-8" style="border: solid red 1px;min-height: 500px">
-            <div id="weblayer" class="row" style="height: 90%">
-                <div class="col-lg-2"> WEB Layer</div>
-                <div class="col-lg-10"><i class="fa fa-desktop fa-4x" style="color: green"></i>
-                    <small> APPServer1</small>
+    <div class="row" style="padding-top: 5px">
+        <div class="col-lg-7" style="border: solid lavender 1px;min-height: 500px">
+
+            <div id="weblayer" class="row" style="padding-top:10%;border: solid lavender 1px;">
+                <div class="col-lg-2"><h6> WEB LAYER </h6></div>
+                <div class="col-lg-10">
+                    <div class="webservers" style="float: left;padding-left: 1%"><i data-priority="1"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="webservers" style="float: left;padding-left: 1%"><i data-priority="2"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="webservers" style="float: left;padding-left: 1%"><i data-priority="3"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="webservers" style="float: left;padding-left: 1%"><i data-priority="4"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="webservers" style="float: left;padding-left: 1%"><i data-priority="5"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+
                 </div>
             </div>
-            <div id="applayer" class="row">
-                <div class="col-lg-2"> APP Layer</div>
-                <div class="col-lg-5"><i class="fa fa-server fa-4x" style="color: green"></i>
-                    <small> WEBServer1</small>
-                </div>
-                <div class="col-lg-5"><i class="fa fa-server fa-4x" style="color: green"></i>
-                    <small> WEBServer2</small>
+
+            <div id="applayer" class="row" style="padding-top:2%;border: solid lavender 1px;">
+                <div class="col-lg-2"><h5> APP LAYER </h5></div>
+                <div class="col-lg-10">
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="1"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden" value="100"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%">
+                        <i data-priority="2" style="color: lightgrey"><input type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="3"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="4"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="5"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="6"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="7"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="appservers" style="float: left;padding-left: 1%"><i data-priority="8"
+                                                                                    style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+
                 </div>
             </div>
-            <div id="dblayer" class="row" style="bottom: 0px">
-                <div class="col-lg-2"><h4>DB Layer</h4></div>
-                <div class="col-lg-10"><i class="fa fa-database fa-4x" style="color: green"></i>
-                    <small> DBServer</small>
+
+            <div id="dblayer" class="row" style="padding-top:2%;border: solid lavender 1px;">
+                <div class="col-lg-2"><h5> DB LAYER </h5></div>
+                <div class="col-lg-10">
+                    <div class="dbservers" style="float: left;padding-left: 1%"><i data-priority="1"
+                                                                                   style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;padding-left: 1%"><i data-priority="2"
+                                                                                  style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;padding-left: 1%"><i data-priority="3"
+                                                                                  style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;"><i data-priority="4" style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;"><i data-priority="5" style="color: lightgrey"><input
+                            type="checkbox" hidden="hidden"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;"><i data-priority="6" style="color: lightgrey"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;"><i data-priority="7" style="color: lightgrey"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
+                    <div class="dbservers" style="float:left;"><i data-priority="8" style="color: lightgrey"></i>
+                        <br>
+                        <h6 class="text-center"></h6>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4" style="border: solid lavender 1px;min-height: 500px">2</div>
+        <div class="col-lg-5" style="border: solid lavender 1px;min-height: 500px">
+            <p style="color: green">server 1 check ok!</p>
+            <p style="color: red">server 2 check error!</p>
+            <p>server 3 check ok!</p>
+        </div>
     </div>
 </div>
 

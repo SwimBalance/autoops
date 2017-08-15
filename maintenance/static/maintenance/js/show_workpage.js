@@ -12,10 +12,14 @@ $(function () {
 
 //加载服务启停功能的内容
 $(function () {
+    // $(".disabled").click(function (event) {
+    //     event.preventDefault();
+    // });
     $("ul[id='servicemgr'] li").click(function () {
         <!-- 导入workPage-->
         if (this.id == 'toms') {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #tom_workpage");
+            $("#modal_page").empty().load("/static/maintenance/html/modal.html #myTomcatModal");
             $.ajax({
                 type: "GET",
                 url: "./../tomcatData/",
@@ -27,12 +31,38 @@ $(function () {
             });
         } else if (this.id == 'oras') {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #ora_workpage");
+            $("#modal_page").empty().load("/static/maintenance/html/modal.html #myOracleModal");
             $.ajax({
                 type: "GET",
                 url: "./../oracleData/",
                 datatype: 'json',
+                data: {page: 1},
                 success: function (datas) {
                     loadoracledata(datas)
+                }
+            })
+        } else if (this.id == 'apache') {
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #apache_workpage");
+            $("#modal_page").empty().load("/static/maintenance/html/modal.html #myApacheModal");
+            $.ajax({
+                type: "GET",
+                url: "./../apacheData/",
+                data: {page: 1},
+                datatype: 'json',
+                success: function (datas) {
+                    loadapachedata(datas)
+                }
+            })
+        } else if (this.id == 'nginx') {
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #nginx_workpage");
+            $("#modal_page").empty().load("/static/maintenance/html/modal.html #myNginxModal");
+            $.ajax({
+                type: "GET",
+                url: "./../nginxData/",
+                data: {page: 1},
+                datatype: 'json',
+                success: function (datas) {
+                    loadnginxdata(datas)
                 }
             })
         }
@@ -61,7 +91,7 @@ function opt_tomcat(obj) {
     var action = obj.name;
     $.ajax({
         type: 'Get',
-        url: './../operation',
+        url: './../operation/tomcat',
         data: {'id': id, 'action': action},
         //ajax调用后触发刷新进度条的任务
         beforSend: showprogress(),
@@ -103,20 +133,81 @@ function opt_tomcat(obj) {
         }, 1000);
     }
 }
-// 分页
-function create_page(obj) {
+// 针对oracle数据库服务器的操作--by lvshaohe
+function opt_oracle(obj) {
+    //进度条当前宽度
+    var count = 0;
+    var widthcount = 0;
+    //定时器变量
+    var timer1;
+    //获取modal的body
+    var tomcat_mes = $("#message");
+    //获取button上记录的该操作的超时时间
+    var opstime = obj.value;
+    //初始化进度条为0
+    $('#progstatus').css('width', '0%');
+    tomcat_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    $("#messagemodal").prop('disabled', true);
+    var id = obj.id;
+    var action = obj.name;
+    $.ajax({
+        type: 'Get',
+        url: './../operation/oracle',
+        data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend: showprogress(),
+        success: function (data) {
+            tomcat_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '201') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign',});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库正常运行'}).tooltip('fixTitle');
+            } else if (data['status'] == '202') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库状态异常，请联系管理员'}).tooltip('fixTitle');
+            } else if (data['status'] == '203') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库已关闭'}).tooltip('fixTitle');
+            }
+            $(obj).removeClass('disabled');
+            $("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            $('#progstatus').css("width", "100%");
+        }
+    });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1 = setInterval(function () {
+            count = count + 1;
+            // alert(count);
+            widthcount = (count / opstime) * 100;
+            $('#progstatus').css("width", widthcount + "%");
+            //如果达到超时时间，停止定时器
+            if (parseInt(count) == parseInt(opstime)) {
+                clearInterval(timer1);
+            }
+        }, 1000);
+    }
+}
+
+// tomcat分页实现
+function createTomcatPage(obj) {
+    var page_number = '';
     var to_page = obj.value;
-    var current_page = $('.preandnext label').text();
+    var current_page = $('#curnpage').text();
     if (to_page == '0') {
         if (current_page == '1') {
             page_number = current_page
         } else {
             page_number = parseInt(current_page) - 1
         }
-    } else if (to_page == '99999999') {
+    } else if (to_page == '9999') {
         page_number = parseInt(current_page) + 1;
-    } else {
-        page_number = to_page;
     }
     $.ajax({
         type: "GET",
@@ -128,11 +219,58 @@ function create_page(obj) {
         }
     });
 }
+//oracle分页--by lvshaohe
+function createOraclePage(obj) {
+    var page_number = '';
+    var to_page = obj.value;
+    var current_page = $('#curnpage').text();
+    if (to_page == '0') {
+        if (current_page == '1') {
+            page_number = current_page
+        } else {
+            page_number = parseInt(current_page) - 1
+        }
+    } else if (to_page == '9999') {
+        page_number = parseInt(current_page) + 1;
+    }
+    $.ajax({
+        type: "GET",
+        url: "./../oracleData/",
+        datatype: 'json',
+        data: {'page': page_number},
+        success: function (datas) {
+            loadoracledata(datas)
+        }
+    });
+}
+
+
 //导入tomcat数据
 function loadtomcatdata(data) {
+    //获取数据
     var datas = data['results'];
     var current_page = data['page'];
-    $('.preandnext label').empty().append(current_page);
+    var firstrecord = (current_page - 1) * 9 + 1;
+    var lastrecord = firstrecord + datas.length - 1;
+    var total = Math.ceil(data['total'] / 9);
+    //跟新label标签的内容
+    $('#curnpage').empty().append(current_page);
+    //导入分页栏的数据
+    if (current_page == 1) {
+        $('.pager .previous').addClass('disabled')
+    } else {
+        $('.pager .previous').removeClass('disabled')
+    }
+    if (current_page == total) {
+        $('.pager .next').addClass('disabled')
+    } else {
+        $('.pager .next').removeClass('disabled')
+    }
+    $('.pager strong:eq(0)').empty().append(current_page);
+    $('.pager strong:eq(1)').empty().append(firstrecord);
+    $('.pager strong:eq(2)').empty().append(lastrecord);
+    $('.pager strong:eq(3)').empty().append(total);
+    //导入表格内容
     var text = $('.text');
     text.empty();
     var html = '';
@@ -159,22 +297,94 @@ function loadtomcatdata(data) {
         } else if (status == '103') {
             html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Tomcat已关闭"></span></td>';
         }
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="' + checkwait + '">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myTomcatModal" value="' + checkwait + '">';
         html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
         //html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="' + startwait + '">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myTomcatModal" value="' + startwait + '">';
         html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal" value="' + stopwait + '">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myTomcatModal" value="' + stopwait + '">';
         html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
         // += '<td class="startwait" style="display:none" >' + startwait + '</td>';
         //html += '<td class="stopwait"  style="display:none">' + stopwait + '</td>';
         html += '</tr>';
     }
     text.append(html);
+    //开启tooltip
     $(function () {
         $("[data-toggle='tooltip']").tooltip();
     });
 }
+//加载oracle数据库相关信息--by lvshaohe
+function loadoracledata(data) {
+    //获取数据
+    var datas = data['results'];
+    var current_page = data['page'];
+    var firstrecord = (current_page - 1) * 9 + 1;
+    var lastrecord = firstrecord + datas.length - 1;
+    var total = Math.ceil(data['total'] / 9);
+    //跟新label标签的内容
+    $('#curnpage').empty().append(current_page);
+    //导入分页栏的数据
+    if (current_page == 1) {
+        $('.pager .previous').addClass('disabled')
+    } else {
+        $('.pager .previous').removeClass('disabled')
+    }
+    if (current_page == total) {
+        $('.pager .next').addClass('disabled')
+    } else {
+        $('.pager .next').removeClass('disabled')
+    }
+    $('.pager strong:eq(0)').empty().append(current_page);
+    $('.pager strong:eq(1)').empty().append(firstrecord);
+    $('.pager strong:eq(2)').empty().append(lastrecord);
+    $('.pager strong:eq(3)').empty().append(total);
+    //导入表格内容
+    var text = $('.text');
+    text.empty();
+    var html = '';
+    for (var i = 0; i < datas.length; i++) {
+        var id = datas[i]['id'];
+        var ip = datas[i]['IP'];
+        var sid = datas[i]['sid'];
+        var dec = datas[i]['hostname'];
+        var status = datas[i]['status'];
+        var startwait = datas[i]['startwait'];
+        var stopwait = datas[i]['stopwait'];
+        var checkwait = datas[i]['checkwait'];
+        html += '<tr>';
+        html += '<td>' + id + '</td>';
+        html += '<td>' + ip + '</td>';
+        html += '<td>' + sid + '</td>';
+        html += '<td>' + dec + '</td>';
+        //更新状态
+        if (status == '201') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Oracle数据库正常运行"></span></td>';
+        } else if (status == '202') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" data-toggle="tooltip" title="Oracle数据库异常，请联系管理员"></span></td>';
+        } else if (status == '203') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Oracle数据库已关闭"></span></td>';
+        }
+        html += '<td>' + '<button id=' + id + ' onclick="opt_oracle(this)" name="check_oracle" class="btn btn-default" data-toggle="modal" data-target="#myOracleModal" value="' + checkwait + '">';
+        html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+        //html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_oracle(this)" name="start_oracle" class="btn btn-default" data-toggle="modal" data-target="#myOracleModal" value="' + startwait + '">';
+        html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_oracle(this)" name="stop_oracle" class="btn btn-default" data-toggle="modal" data-target="#myOracleModal" value="' + stopwait + '">';
+        html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
+        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
+        // html += '<span class="glyphicon glyphicon-align-left" aria-hidden="true">' + '</span>';
+        // html += '</button>' + '</td>';
+        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat">start</button>' + '</td>';
+        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat">stop</button>' + '</td>';
+        // html += '</tr>';
+    }
+    text.append(html);
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+}
+
 //tomcat搜索栏
 function searchtomcat() {
 
@@ -191,28 +401,332 @@ function searchtomcat() {
     })
 }
 
-//加载oracle数据库相关信息
-function loadoracledata(datas) {
+//导入apache数据
+function loadapachedata(data) {
+    //获取数据
+    var datas = data['results'];
+    var current_page = data['page'];
+    var firstrecord = (current_page - 1) * 9 + 1;
+    var lastrecord = firstrecord + datas.length - 1;
+    var total = Math.ceil(data['total'] / 9);
+    //跟新label标签的内容
+    $('#curnpage').empty().append(current_page);
+    //导入分页栏的数据
+    if (current_page == 1) {
+        $('.pager .previous').addClass('disabled')
+    } else {
+        $('.pager .previous').removeClass('disabled')
+    }
+    if (current_page == total) {
+        $('.pager .next').addClass('disabled')
+    } else {
+        $('.pager .next').removeClass('disabled')
+    }
+    $('.pager strong:eq(0)').empty().append(current_page);
+    $('.pager strong:eq(1)').empty().append(firstrecord);
+    $('.pager strong:eq(2)').empty().append(lastrecord);
+    $('.pager strong:eq(3)').empty().append(total);
+    var text = $('.text');
+    text.empty();
     var html = '';
     for (var i = 0; i < datas.length; i++) {
-        var id = datas[i]['message'];
-        var ip = datas[i]['message'];
-        var host = datas[i]['message'];
-        var dec = datas[i]['message'];
+        var id = datas[i]['id'];
+        var ip = datas[i]['ipaddress'];
+        var host = datas[i]['machine'];
+        var dec = datas[i]['description'];
+        var status = datas[i]['status'];
+        var startwait = datas[i]['startwait'];
+        var stopwait = datas[i]['stopwait'];
+        var checkwait = datas[i]['checkwait'];
         html += '<tr>';
         html += '<td>' + id + '</td>';
-        html += '<td>' + ip + '</td>';
+        html += '<td class="ipaddress">' + ip + '</td>';
         html += '<td>' + host + '</td>';
         html += '<td>' + dec + '</td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
-        html += '<span class="glyphicon glyphicon-align-left" aria-hidden="true">' + '</span>';
-        html += '</button>' + '</td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat">start</button>' + '</td>';
-        html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat">stop</button>' + '</td>';
+        //更新状态
+        if (status == '401') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Apache正常运行"></span></td>';
+        } else if (status == '402' || status == '404' || status == '405') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" data-toggle="tooltip" title="Apache异常，请联系管理员"></span></td>';
+        } else if (status == '403') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Apache已关闭"></span></td>';
+        }
+        html += '<td>' + '<button id=' + id + ' onclick="opt_apache(this)" name="check_apache" class="btn btn-default" data-toggle="modal" data-target="#myApacheModal" value="' + checkwait + '">';
+        html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_apache(this)" name="start_apache" class="btn btn-default" data-toggle="modal" data-target="#myApacheModal" value="' + startwait + '">';
+        html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_apache(this)" name="stop_apache" class="btn btn-default" data-toggle="modal" data-target="#myApacheModal" value="' + stopwait + '">';
+        html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
         html += '</tr>';
     }
+    text.append(html);
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+}
+//apache翻页
+function createApachePage(obj) {
+    var page_number = '';
+    var to_page = obj.value;
+    var current_page = $('#curnpage').text();
+    if (to_page == '0') {
+        if (current_page == '1') {
+            page_number = current_page
+        } else {
+            page_number = parseInt(current_page) - 1
+        }
+    } else if (to_page == '9999') {
+        page_number = parseInt(current_page) + 1;
+    }
+    $.ajax({
+        type: "GET",
+        url: "./../apacheData/",
+        datatype: 'json',
+        data: {'page': page_number},
+        success: function (datas) {
+            loadapachedata(datas)
+        }
+    });
+}
+//apache搜索栏
+function searchapache() {
+    var search_val = $('#search_apache').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchapache/",
+        data: {'data': search_val},
+        datatype: "json",
+        success: function (datas) {
+            loadapachedata(datas);
+            $('.preandnext').empty();
+        }
+    })
+}
+//apache按钮的操作
+function opt_apache(obj) {
+    //进度条当前宽度
+    var count = 0;
+    var widthcount = 0;
+    //定时器变量
+    var timer1;
+    //获取modal的body
+    var apache_mes = $("#apache_message");
+    //获取button上记录的该操作的超时时间
+    var opstime = obj.value;
+    //初始化进度条为0
+    var myApacheModal = $('#myApacheModal');
+    myApacheModal.find('#progstatus').css('width', '0%');
+    apache_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    myApacheModal.find("#messagemodal").prop('disabled', true);
+    var id = obj.id;
+    var action = obj.name;
+    $.ajax({
+        type: 'Get',
+        url: './../operation/apache',
+        data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend: showprogress(),
+        success: function (data) {
+            apache_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '401') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Apache正常运行'}).tooltip('fixTitle');
+            } else if (data['status'] == '402') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Apache异常，请联系管理员'}).tooltip('fixTitle');
+            } else if (data['status'] == '403') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Apache已关闭'}).tooltip('fixTitle');
+            }
+            $(obj).removeClass('disabled');
+            myApacheModal.find("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            myApacheModal.find('#progstatus').css("width", "100%");
+        }
+    });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1 = setInterval(function () {
+            count = count + 1;
+            //alert(count);
+            widthcount = (count / opstime) * 100;
+            $('#myApacheModal').find('#progstatus').css("width", widthcount + "%");
+            //如果达到超时时间，停止定时器
+            if (parseInt(count) == parseInt(opstime)) {
+                clearInterval(timer1);
+            }
+        }, 1000);
+    }
+}
+
+//导入nginx数据
+function loadnginxdata(data) {
+    //获取数据
+    var datas = data['results'];
+    var current_page = data['page'];
+    var firstrecord = (current_page - 1) * 9 + 1;
+    var lastrecord = firstrecord + datas.length - 1;
+    var total = Math.ceil(data['total'] / 9);
+    //跟新label标签的内容
+    $('#curnpage').empty().append(current_page);
+    //导入分页栏的数据
+    if (current_page == 1) {
+        $('.pager .previous').addClass('disabled');
+    } else {
+        $('.pager .previous').removeClass('disabled');
+    }
+    if (current_page == total) {
+        $('.pager .next').addClass('disabled')
+    } else {
+        $('.pager .next').removeClass('disabled')
+    }
+    $('.pager strong:eq(0)').empty().append(current_page);
+    $('.pager strong:eq(1)').empty().append(firstrecord);
+    $('.pager strong:eq(2)').empty().append(lastrecord);
+    $('.pager strong:eq(3)').empty().append(total);
     var text = $('.text');
-    text.empty().append(html);
+    text.empty();
+    var html = '';
+    for (var i = 0; i < datas.length; i++) {
+        var id = datas[i]['id'];
+        var ip = datas[i]['ipaddress'];
+        var host = datas[i]['machine'];
+        var dec = datas[i]['description'];
+        var status = datas[i]['status'];
+        var startwait = datas[i]['startwait'];
+        var stopwait = datas[i]['stopwait'];
+        var checkwait = datas[i]['checkwait'];
+        html += '<tr>';
+        html += '<td>' + id + '</td>';
+        html += '<td class="ipaddress">' + ip + '</td>';
+        html += '<td>' + host + '</td>';
+        html += '<td>' + dec + '</td>';
+        //更新状态
+        if (status == '501') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Nginx正常运行"></span></td>';
+        } else if (status == '503') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Nginx已关闭"></span></td>';
+        } else {
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" data-toggle="tooltip" title="Nginx异常，请联系管理员"></span></td>';
+        }
+        html += '<td>' + '<button id=' + id + ' onclick="opt_nginx(this)" name="check_nginx" class="btn btn-default" data-toggle="modal" data-target="#myNginxModal" value="' + checkwait + '">';
+        html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_nginx(this)" name="start_nginx" class="btn btn-default" data-toggle="modal" data-target="#myNginxModal" value="' + startwait + '">';
+        html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_nginx(this)" name="stop_nginx" class="btn btn-default" data-toggle="modal" data-target="#myNginxModal" value="' + stopwait + '">';
+        html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
+        html += '</tr>';
+    }
+    text.append(html);
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+}
+//nginx翻页
+function createNginxPage(obj) {
+    var page_number = '';
+    var to_page = obj.value;
+    var current_page = $('#curnpage').text();
+    if (to_page == '0') {
+        if (current_page == '1') {
+            page_number = current_page
+        } else {
+            page_number = parseInt(current_page) - 1
+        }
+    } else if (to_page == '9999') {
+        page_number = parseInt(current_page) + 1;
+    }
+    $.ajax({
+        type: "GET",
+        url: "./../nginxData/",
+        datatype: 'json',
+        data: {'page': page_number},
+        success: function (datas) {
+            loadnginxdata(datas)
+        }
+    });
+}
+//nginx搜索栏
+function searchnginx() {
+    var search_val = $('#search_nginx').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchnginx/",
+        data: {'data': search_val},
+        datatype: "json",
+        success: function (datas) {
+            loadnginxdata(datas);
+            $('.preandnext').empty();
+        }
+    })
+}
+//nginx按钮的操作
+function opt_nginx(obj) {
+    //进度条当前宽度
+    var count = 0;
+    var widthcount = 0;
+    //定时器变量
+    var timer1;
+    //获取modal的body
+    var nginx_mes = $("#nginx_message");
+    //获取button上记录的该操作的超时时间
+    var opstime = obj.value;
+    //初始化进度条为0
+    var myNginxModal = $('#myNginxModal');
+    myNginxModal.find('#progstatus').css('width', '0%');
+    nginx_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    myNginxModal.find("#messagemodal").prop('disabled', true);
+    var id = obj.id;
+    var action = obj.name;
+    $.ajax({
+        type: 'Get',
+        url: './../operation/nginx',
+        data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend: showprogress(),
+        success: function (data) {
+            nginx_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '501') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Nginx正常运行'}).tooltip('fixTitle');
+            } else if (data['status'] == '502') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Nginx异常，请联系管理员'}).tooltip('fixTitle');
+            } else if (data['status'] == '503') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Nginx已关闭'}).tooltip('fixTitle');
+            }
+            $(obj).removeClass('disabled');
+            myNginxModal.find("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            myNginxModal.find('#progstatus').css("width", "100%");
+        }
+    });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1 = setInterval(function () {
+            count = count + 1;
+            //alert(count);
+            widthcount = (count / opstime) * 100;
+            $('#myNginxModal').find('#progstatus').css("width", widthcount + "%");
+            //如果达到超时时间，停止定时器
+            if (parseInt(count) == parseInt(opstime)) {
+                clearInterval(timer1);
+            }
+        }, 1000);
+    }
 }
 
 
@@ -223,7 +737,7 @@ $(function () {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #auditlog_workpage");
             $.ajax({
                 type: "GET",
-                url: "./../auditlog/",
+                url: "./../auditlogData/",
                 datatype: 'json',
                 data: {page: 1},
                 success: function (datas) {
@@ -261,7 +775,7 @@ function page_auditlog(obj) {
     var page_number = $(obj).text();
     $.ajax({
         type: "GET",
-        url: "./../auditlog/",
+        url: "./../auditlogData/",
         datatype: 'json',
         data: {page: page_number},
         success: function (datas) {
@@ -278,7 +792,7 @@ $(function () {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #usermanagement_workpage");
             $.ajax({
                 type: "GET",
-                url: "./../usermanagement/",
+                url: "./../usermanagementData/",
                 datatype: 'json',
                 data: {page: 1},
                 success: function (datas) {
@@ -331,16 +845,6 @@ function loaduserdata(datas) {
             html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
             html += '</tr>';
         }
-        // html += '<tr>';
-        // html += '<td>' + username + '</td>';
-        // html += '<td >' + email + '</td>';
-        // html += '<td>' + privilege + '</td>';
-        // html += '<td>' + groups + '</td>';
-        // html += '<td>' + '<button id=' + username + ' onclick="opt_usermanagement_change(this)" name="change_userinfo" class="btn btn-default" data-toggle="modal" data-target="#userchangemodal">';
-        // html += '<span class="glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span> 修改</button>';
-        // html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'<button id=' + username + ' onclick="opt_usermanagement_delete(this)" name="delete_userinfo" class="btn btn-default"  data-toggle="modal" href="#userdelmodal" >';
-        // html += '<span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span> 删除</button></td>';
-        // html += '</tr>';
     }
     text.append(html);
     html = '<button id="btadduser" class="btn btn-primary" data-toggle="modal" data-target="#addusermodal"><span class="glyphicon glyphicon-plus"></span> 添加新用户</button>'
@@ -367,16 +871,6 @@ function opt_usermanagement_delete(obj) {
     var action = obj.name;
     var del_diag = $("#messageuserdel");
     del_diag.empty().append('<label id="' + id + '"' + 'title="' + action + '">真的要删除用户' + id + "吗?" + '</label>');
-    /*$.ajax({
-     type: 'Get',
-     url: './../operation/userinfo',
-     data: {'id': id, 'action': action},
-     success: function (data) {
-     del_diag.empty().append(data['message']);
-     $(obj).removeClass('disabled');
-     $("#messagemodal").removeAttr("disabled");
-     }
-     });*/
 }
 //用户信息维护：modal中确认删除用户信息，发送数据到后台
 function deleteuser(obj) {
@@ -456,16 +950,6 @@ function opt_save() {
 }
 //用户信息保存成功后，点击退出同时刷新页面数据
 function opt_updata() {
-    // $("#workpage").empty().load("/static/maintenance/html/workpage.html #usermanagement_workpage");
-    // $.ajax({
-    //     type: "GET",
-    //     url: "./../usermanagement/",
-    //     datatype: 'json',
-    //     data: {page: 1},
-    //     success: function (datas) {
-    //         loaduserdata(datas)
-    //     }
-    // });
     $("#usermanagement").trigger("click");
 }
 
@@ -506,19 +990,286 @@ function saveuser() {
 $(function () {
     $("ul[id='tools'] li").click(function () {
         if (this.id == 'systemhealthcheck') {
-            $("#workpage").empty().load("/static/maintenance/html/workpage.html #systemhealthcheck_workpage");
-            $.ajax({
-                type: "GET",
-                url: "./../auditlog/",
-                datatype: 'json',
-                data: {page: 1},
-                success: function (datas) {
-                    loadauditlogdata(datas)
-                }
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #systemhealthcheck_workpage", function () {
+                //$('#machinelist').val('选择应用系统名称');
+                //$('#machinelist').selectpicker('render');
+                $('#machinelist').hide();
+                $('#startchecksystem').attr('disabled', '');
+                //$('#maxOption3').show();
+                $(".dbservers i[data-priority='1']").addClass('fa fa-database fa-4x');
+                $(".dbservers i[data-priority='1']").siblings('h6').text('DB');
+                $(".webservers i[data-priority='1']").addClass('fa fa-desktop fa-4x');
+                $(".webservers i[data-priority='1']").siblings('h6').text('WEB');
+                $(".appservers i[data-priority='1']").addClass('fa fa-server fa-4x');
+                $(".appservers i[data-priority='1']").siblings('h6').text('APP');
             });
+            //后台获取数据填充systemlist中的内容
+            getsystemlist();
         }
     })
 });
+//ajax方式从后台获取应用系统名称列表，加入到select中进行显示
+function getsystemlist() {
+    //alert('get data from database');
+    $.ajax({
+        type: "Get",
+        url: "./../operation/getsystemlist/",
+        datatype: 'json',
+        success: function (data) {
+            //$("#systemlist").val(123);
+            //$("#systemlist").text(321);
+            for (i = 0; i < data.length; i++) {
+                $("#systemlist").append('<option>' + data[i]['systemname'] + '</option>');
+                //$("#systemlist").append("<option title='"+data[i]['systemname']+"'>" + data[i]['systemname'] + "</option>");
+            }
+            //alert('ajax succ');
+        }
+    })
+}
+
+//选择应用系统名称后，显示机器清单，同时开始按钮可用
+function systemchanged(obj) {
+    $("#machinelist").empty();
+    //清空其他应用的系统架构图
+    $(".dbservers i").removeClass();
+    $(".dbservers i").siblings('h6').text('');
+    $(".webservers i").removeClass();
+    $(".webservers i").siblings('h6').text('');
+    $(".appservers i").removeClass();
+    $(".appservers i").siblings('h6').text('');
+    //如果没有数据，就留一个示例的页面
+    $(".dbservers i[data-priority='1']").addClass('fa fa-database fa-4x');
+    $(".dbservers i[data-priority='1']").siblings('h6').text('DB');
+    $(".webservers i[data-priority='1']").addClass('fa fa-desktop fa-4x');
+    $(".webservers i[data-priority='1']").siblings('h6').text('WEB');
+    $(".appservers i[data-priority='1']").addClass('fa fa-server fa-4x');
+    $(".appservers i[data-priority='1']").siblings('h6').text('APP');
+    //alert($("div[id='applayer'] i").css('color'));
+    //切换应用系统后将所有的图标变成灰色
+    $("div[id='applayer'] i").css({'color': 'lightgrey'});
+    $("div[id='weblayer'] i").css({'color': 'lightgrey'});
+    $("div[id='dblayer'] i").css({'color': 'lightgrey'});
+    //获取某个应用系统对应的服务器清单
+    getmachinelist();
+    //var sysindx = obj.selectedIndex;
+    var systemid = obj.options[obj.selectedIndex].value;
+    if (systemid != 0) {
+        // $('#machinelist').selectpicker('render');
+        // $('#machinelist').show();
+        $('#startchecksystem').removeAttr('disabled');
+
+    }
+    else {
+        // $("#machinelist").empty();
+        // $('#machinelist').selectpicker('render');
+        // $('#machinelist').show();
+        // $('#machinelist').selectpicker('hide');
+        // $('#machinelist').selectpicker('render');
+        //$('#machinelist').selectpicker('destroy');
+        $('#startchecksystem').attr('disabled', '');
+    }
+}
+//从后台数据库中获取当前应用系统对应的服务器清单
+function getmachinelist() {
+    $("#machinelist").empty();
+    var systemname = $("#systemlist option:selected").text();
+    //alert(systemname);
+    // $("#machinelist").append('<option>'+123+'</option>>');
+    $.ajax({
+        type: "GET",
+        url: "./../operation/getmachinelist/",
+        datatype: 'json',
+        data: {systemname: systemname},
+        success: function (data) {
+            for (i = 0; i < data.length; i++) {
+                $("#machinelist").append('<option title="' + data[i]['types'] + '" value="' + data[i]['levels'] + '">' + data[i]['machinename'] + '</option>');
+                //$("#machinelist").append('<option>'+i+'</option>');
+                $('#machinelist').selectpicker('render');
+                $('#machinelist').selectpicker('refresh');
+                $('#machinelist').selectpicker();
+                //alert('getdata from database machine list:' + data[i]['machinename']);
+                //获取所有的机器清单后，根据获取到的数据生成服务器的架构图
+                //生成系统架构图
+                var levels = data[i]['levels'];
+                var priority = data[i]['priority'];
+                var machinename = data[i]['machinename'];
+                if (levels == 1) {//DB LAYER层的服务器
+                    //显示图标和服务器的名称
+                    //alert("hello"); $("ul[id='servicemgr'] li")
+                    $(".dbservers i[data-priority='" + priority + "']").addClass('fa fa-database fa-4x');
+                    $(".dbservers i[data-priority='" + priority + "']").siblings('h6').text(machinename);
+                    //$(".dbservers i[data-priority='" + priority + "']").children('input').removeAttr("hidden");
+
+                }
+                if (levels == 2) {//APP LAYER层的服务器
+                    //显示图标和服务器的名称
+                    //alert("hello"); $("ul[id='servicemgr'] li")
+                    $(".appservers i[data-priority='" + priority + "']").addClass('fa fa-server fa-4x');
+                    $(".appservers i[data-priority='" + priority + "']").siblings('h6').text(machinename);
+                    //$(".appservers i[data-priority='" + priority + "']").children('input').removeAttr("hidden");
+                    //css({'visibility':'visible'});visible
+
+                }
+                if (levels == 3) {//WEB LAYER层的服务器
+                    //显示图标和服务器的名称
+                    //alert("hello"); $("ul[id='servicemgr'] li")
+                    $(".webservers i[data-priority='" + priority + "']").addClass('fa fa-desktop fa-4x');
+                    $(".webservers i[data-priority='" + priority + "']").siblings('h6').text(machinename);
+                    //$(".webservers i[data-priority='" + priority + "']").children('input').removeAttr("hidden");
+
+                }
+            }
+
+        }
+    });
+    $('#machinelist').selectpicker('render');
+    $('#machinelist').selectpicker('refresh');
+    $('#machinelist').selectpicker();
+}
+
+//服务器选中后触发修改图中的服务器
+function machinechange() {
+    var machinelevellist = $("#machinelist").val();//获取选中的对象
+    //var machinename = $("#machinelist option:selected").text();//获取选中机器的名称
+    //var machinename = $("#machinelist").find("option:selected").text();
+    //alert("name="+machinename);
+    // for (i=0;i<machinename.length;i++){
+    //     alert("name "+i+"="+machinename[i]);
+    // }
+    //获取多选菜单中服务器的名称，转换成一个字符串数组
+    var machinename = $("#machinelist option:selected").map(function () {
+        return $(this).val() + ":" + $(this).text();
+    }).get().join(",");
+    //alert("machinename="+machinename+" type:"+typeof(machinename) );
+    var servername = machinename.split(",");
+    //针对选中的服务器进行显示
+    for (i = 0; i < servername.length; i++) {
+        var levels = servername[i].split(":")[0];
+        var contents = servername[i].split(":")[1];
+        //$("ul[id='servicemgr'] li")
+        if (levels == 1) {
+            //var obj = $("div[id='dblayer']:contains('"+contents+"')");
+            var obj = $("div[id='dblayer'] .dbservers:contains('" + contents + "')");
+            obj.children('i').css({'color': 'black'});
+            //alert(1)
+        }
+        if (levels == 2) {
+            var obj = $("div[id='applayer'] .appservers:contains('" + contents + "')");
+            obj.children('i').css({'color': 'black'});
+        }
+        if (levels == 3) {
+            var obj = $("div[id='weblayer'] .webservers:contains('" + contents + "')");
+            obj.children('i').css({'color': 'black'});
+        }
+    }
+    //var unsel = $("#machinelist option:not(:selected)").val();
+    //获取多选菜单中所有option对应的value值，不管选中还是没有选中
+    var all = $("#machinelist option").map(function () {
+        return $(this).val() + ":" + $(this).text();
+    }).get().join(",");
+    //var sel = $("#machinelist option:selected").val();
+    //var len = $("#machinelist").val().length;
+    //alert("value="+machinelevellist+" len="+len);
+    //alert(machinelevellist);
+    var allserver = all.split(',');
+    // for(i=0;i<allserver.length;i++){
+    //    alert(allserver[i])
+    // }
+    var currentserver = servername;
+    //alert('l='+currentserver.length);
+    // for (i = 0; i < currentserver.length; i++) {
+    //     alert('xxx=' + currentserver[i])
+    // }
+    var unselserver = '';
+    //allserver是所有服务器清单；currentserver是当前选择的服务器；unselserver是未选择的服务器
+    for (var j = 0; j < allserver.length; j++) {
+        //alert(allserver[j])
+        for (var k = 0; k < currentserver.length; k++) {
+            //alert(currentserver[k])
+            if (allserver[j] == currentserver[k]) {
+                break;
+            }
+            if (k == currentserver.length - 1) {
+                unselserver = unselserver + allserver[j] + ','
+            }
+        }
+    }
+    //alert(unselserver);
+    //注意一定要在前面赋值，如果在for中直接使用 i < unselserver.split(',').length可能导致结果不正确
+    var unselserver = unselserver.split(',');
+    // for (i = 0; i < unselserver.length; i++) {
+    //     alert(unselserver[i])
+    // }
+    //alert("all:" + allserver + " cur:" + currentserver + " unsel:" + unselserver);
+    //对未选中的服务器将颜色变为灰色
+    for (i = 0; i < unselserver.length - 1; i++) {
+        var unlevels = unselserver[i].split(":")[0];
+        var uncontents = unselserver[i].split(":")[1];
+        if (unlevels == 1) {
+            var unobj = $("div[id='dblayer'] .dbservers:contains('" + uncontents + "')");
+            unobj.children('i').css({'color': 'lightgrey'});
+            //alert(1+" "+uncontents)
+        }
+        if (unlevels == 2) {
+            var unobj = $("div[id='applayer'] .appservers:contains('" + uncontents + "')");
+            unobj.children('i').css({'color': 'lightgrey'});
+            //alert(2+" "+uncontents);
+        }
+        if (unlevels == 3) {
+            var unobj = $("div[id='weblayer'] .webservers:contains('" + uncontents + "')");
+            unobj.children('i').css({'color': 'lightgrey'});
+            //alert(3+" "+uncontents);
+        }
+    }
+    //alert("len="+len+"lensel="+lensel+"lenunsel="+lenunsel);
+    //alert("selected:" + machinelevellist + "all:" + all);
+    //遍历当前使用的服务器进行着色:如果当前没有被选择服务器，设置为灰色
+    // if (currentserver == '') {
+    //     $("div[id='weblayer'] i").css({'color': 'lightgrey'});
+    //     $("div[id='applayer'] i").css({'color': 'lightgrey'});
+    //     $("div[id='dblayer'] i").css({'color': 'lightgrey'});
+    // }
+    // else {
+    //     for (i = 0; i < currentserver.length; i++) {
+    //         //alert(machinelevellist[i]);
+    //         if (currentserver[i] == 3) {
+    //             $("div[id='weblayer'] i").css({'color': 'black'});
+    //             //$("div[id='applayer'] small").text();
+    //         }
+    //         if (currentserver[i] == 2) {
+    //             $("div[id='applayer'] i").css({'color': 'black'});
+    //         }
+    //         if (currentserver[i] == 1) {
+    //             $("div[id='dblayer'] i").css({'color': 'black'});
+    //         }
+    //     }
+    // }
+
+    //遍历服务器，对未使用的服务器进行着色，如果存在未被选择的服务器，将这些服务器设置成灰色
+    // if (unselserver == '') {
+    //     //$("div[id='applayer'] small").text();
+    // }
+    // else {
+    //     for (i = 0; i < unselserver.length; i++) {
+    //         //alert(machinelevellist[i]);
+    //         if (unselserver[i] == 3) {
+    //             $("div[id='weblayer'] i").css({'color': 'lightgrey'});
+    //             //$("div[id='applayer'] small").text();
+    //         }
+    //         if (unselserver[i] == 2) {
+    //             $("div[id='applayer'] i").css({'color': 'lightgrey'});
+    //         }
+    //         if (unselserver[i] == 1) {
+    //             $("div[id='dblayer'] i").css({'color': 'lightgrey'});
+    //         }
+    //     }
+    // }
+    //alert("unsel="+unsel);
+
+    //var current_machine=machinename[len-1];
+    //alert("len=",len,current_machine);
+    //alert($(this).text());
+}
 
 
 //左侧导航栏功能实现：点击一个导航栏后，自动收缩其他已经打开的导航菜单
