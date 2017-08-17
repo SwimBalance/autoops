@@ -24,7 +24,7 @@ class Task(object):
         try:
             con = self.create_connect()
         except:
-            return '102'
+            return '异常'
         cmd = self.task_info['cmd']
         stdin, stdout, stderr = con.exec_command(cmd)
         result = stdout.read()

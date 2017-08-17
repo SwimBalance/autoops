@@ -98,6 +98,9 @@ def updatestatus(taskinfo):
         elif 'oracle' in taskinfo['action']:
             sqlstatement2 = "update oracledata set status = %d where id = %r" % (
                 int(taskinfo['resulut']), taskinfo['id'])
+        elif 'mysql' in taskinfo['action']:
+            sqlstatement2 = "update mysqldata set status = %d where id = %r" % (
+                int(taskinfo['resulut']), taskinfo['id'])
         cursor.execute(sqlstatement2)
 
 
@@ -234,7 +237,7 @@ def get_oracle_data(request):
         # 数据查询的起点
         startpos = (page_number - 1) * maxline
         cursor.execute(
-            'select id, IP, sid,hostname,status,startwait,stopwait,checkwait from oracledata LIMIT %d, %d;' % (
+            'select id, machine, ipaddress,sid,startwait,stopwait,status,checkwait from oracledata LIMIT %d, %d;' % (
                 startpos, maxline))
         results = dictfetchall(cursor)
         cursor.execute('SELECT COUNT(*) FROM oracledata')
@@ -248,43 +251,32 @@ def get_taskinfo_oracle(oracle_id, oracle_action, oper):
     # userinfo = ''
     with connection.cursor() as cursor:
         cursor.execute(
-            'SELECT id, IP, sid, hostname, startwait, stopwait FROM oracledata WHERE id = %s' % oracle_id
+            'SELECT id, ipaddress, sid, machine, startwait, stopwait FROM oracledata WHERE id = %s' % oracle_id
         )
         oracler = dictfetchall(cursor)[0]
-        serverip = oracler['IP']
-        print(serverip)
+        serverip = oracler['ipaddress']
         res = cursor.execute(
             "SELECT user1,password1 FROM machine_pwd WHERE ipaddress = '%s'" % serverip
         )
-        print(res)
         if res:
             userinfo = dictfetchall(cursor)[0]
-            print(userinfo)
         else:
             userinfo = {'user1': 'other', 'password1': 'other'}
     if oracle_action == 'check_oracle':
-        # tomcat_home = oracler['tomcathome']
-        # tomcat_port = oracler['tomcatport']
         command = 'sh /operation/oracle/checkoracle.sh'
     elif oracle_action == 'start_oracle':
         # 需要传入1个参数   启动数据库超时时长
-        # tomcat_home = oracler['tomcathome']
-        # tomcat_port = oracler['tomcatport']
         start_wait = oracler['startwait']
-        # sh_dir = '/operation/tomcat/starttomcat.sh'
         command = 'sh /operation/oracle/startoracle.sh %s ' % start_wait
     elif oracle_action == 'stop_oracle':
         # 需要传入1个参数   关闭数据库超时时长
-        # tomcat_home = oracler['tomcathome']
-        # tomcat_port = oracler['tomcatport']
         stop_wait = oracler['stopwait']
-        # sh_dir = '/operation/tomcat/starttomcat.sh'
         command = 'sh /operation/oracle/stoporacle.sh %s' % stop_wait
     task_info = {
         'id': oracle_id,
         'action': oracle_action,
         'oper': oper,
-        'ip': oracler['IP'],
+        'ip': oracler['ipaddress'],
         'user': userinfo['user1'],
         'pwd': userinfo['password1'],
         'cmd': command,
@@ -304,7 +296,6 @@ def opt_oracle(request):
     mytask = Task(taskinfo)
     result = mytask.execute()
     print(result)
-    # print("result=",result)
     if result.isdigit():
         taskinfo['resulut'] = result
     else:
@@ -319,13 +310,22 @@ def opt_oracle(request):
         '201': 'Oracle数据库正常运行.',
         '202': 'Oracle数据库状态异常,请人工检查.',
         '203': 'Oracle数据库处于关闭状态.',
-        # '104': 'Tomcat启动超时.',
-        # '105': 'Tomcat关闭超时.',
     }
     return JsonResponse({
         'status': taskinfo['resulut'],
         'message': message[taskinfo['resulut']],
     })
+
+
+def search_oracle(request):
+    search_val = request.GET.get('data')
+    sqlsatement = "select id, machine, ipaddress,sid,startwait,stopwait,status,checkwait " \
+                  "from oracledata WHERE ipaddress= '%s' OR machine= '%s'" % (search_val, search_val)
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+        results = dictfetchall(cursor)
+    data = {'results': results}
+    return JsonResponse(data)
 
 
 # 服务启停功能：apache
@@ -519,6 +519,104 @@ def search_nginx(request):
     search_val = request.GET.get('data')
     sqlsatement = "select id, machine, ipaddress, description, status,startwait,stopwait,checkwait " \
                   "from nginxdata WHERE ipaddress= '%s' OR machine= '%s'" % (search_val, search_val)
+    with connection.cursor() as cursor:
+        cursor.execute(sqlsatement)
+        results = dictfetchall(cursor)
+    data = {'results': results}
+    return JsonResponse(data)
+
+
+# 服务启停功能：mysql
+def get_mysql_data(request):
+    # 定义每个页面最大显示的数据行数
+    maxline = 9
+    with connection.cursor() as cursor:
+        page_number = int(request.GET.get('page'))
+        # 数据查询的起点
+        startpos = (page_number - 1) * maxline
+        cursor.execute(
+            'select id, machine, mysqlport, ipaddress, description, hostname,checktime,status,startwait,stopwait'
+            ' from mysqldata LIMIT %d, %d;' % (startpos, maxline))
+        results = dictfetchall(cursor)
+        cursor.execute('SELECT COUNT(*) FROM mysqldata')
+        total = cursor.fetchall()[0][0]
+    data = {'page': page_number, 'total': total, 'results': results}
+    return JsonResponse(data)
+
+
+def get_mysql_taskinfo(mysql_id, mysql_action, oper):
+    command = ''
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'SELECT id, ipaddress, startwait, stopwait FROM mysqldata WHERE id = %s' % mysql_id
+        )
+        mysqlr = dictfetchall(cursor)[0]
+        serverip = mysqlr['ipaddress']
+        res = cursor.execute(
+            "SELECT user1,password1 FROM machine_pwd WHERE ipaddress = '%s'" % serverip
+        )
+        if res:
+            userinfo = dictfetchall(cursor)[0]
+        else:
+            userinfo = {'user1': 'other', 'password1': 'other'}
+    if mysql_action == 'check_mysql':
+        command = 'sh /operation/mysql/checkmysql.sh '
+    elif mysql_action == 'start_mysql':
+        start_wait = mysqlr['startwait']
+        command = 'sh /operation/mysql/startmysql.sh %s' % start_wait
+    elif mysql_action == 'stop_mysql':
+        stop_wait = mysqlr['stopwait']
+        command = 'sh /operation/mysql/stopmysql.sh %s' % stop_wait
+    task_info = {
+        'id': mysql_id,
+        'action': mysql_action,
+        'oper': oper,
+        'ip': mysqlr['ipaddress'],
+        'user': userinfo['user1'],
+        'pwd': userinfo['password1'],
+        'cmd': command,
+        'result': ''
+    }
+    return task_info
+
+
+def opt_mysql(request):
+    # 获得前台信息
+    mysql_id = request.GET.get('id')
+    mysql_action = request.GET.get('action')
+    oper = request.COOKIES.get('loginname')
+    # 根据ID和action 获得任务信息，并形成完整的操作SQL，都存入taskinfo中
+    taskinfo = get_mysql_taskinfo(mysql_id, mysql_action, oper)
+    # 传入taskinfo，执行SQL操作，返回目标服务器控制台的结果
+    mytask = Task(taskinfo)
+    result = mytask.execute()
+    # print("result=",result)
+    if result.isdigit():
+        taskinfo['resulut'] = result
+    else:
+        taskinfo['resulut'] = '302'
+    # 将操作记录写入记录表中
+    record_operation(taskinfo)
+    # 更新nginxdata表中的状态字段
+    updatestatus(taskinfo)
+    # 将结果传到前台
+    message = {
+        '301': 'Mysql正常运行.',
+        '302': 'Mysql异常,请人工检查.',
+        '303': 'Mysql服务关闭.',
+        '304': 'Mysql启动超时',
+        '305': 'Mysql关闭超时',
+    }
+    return JsonResponse({
+        'status': taskinfo['resulut'],
+        'message': message[taskinfo['resulut']],
+    })
+
+
+def search_mysql(request):
+    search_val = request.GET.get('data')
+    sqlsatement = "select id, machine, ipaddress, description,mysqlport,status,startwait,stopwait,checktime " \
+                  "from mysqldata WHERE ipaddress= '%s' OR machine= '%s'" % (search_val, search_val)
     with connection.cursor() as cursor:
         cursor.execute(sqlsatement)
         results = dictfetchall(cursor)

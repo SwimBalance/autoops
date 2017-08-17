@@ -7,7 +7,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">操作结果</h4>
             </div>
-            <div class="modal-body" id="message"></div>
+            <div class="modal-body" id="tomcat_message"></div>
             <div class=" progress ">
                 <div id="progstatus" class="progress-bar"></div>
             </div>
@@ -29,7 +29,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">操作结果</h4>
             </div>
-            <div class="modal-body" id="message"></div>
+            <div class="modal-body" id="oracle_message"></div>
             <div class=" progress ">
                 <div id="progstatus" class="progress-bar"></div>
             </div>
@@ -85,6 +85,29 @@
     </div><!-- /.modal -->
 </div>
 <!-- 模态框（Modal）:nginx操作弹出窗口界面 :END-->
+
+<!-- 模态框（Modal）:mysql操作弹出窗口界面 :START-->
+<div class="modal fade" id="myMysqlModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Mysql操作结果</h4>
+            </div>
+            <div class="modal-body" id="mysql_message"></div>
+            <div class=" progress ">
+                <div id="progstatus" class="progress-bar"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="messagemodal" type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）:mysql操作弹出窗口界面 :END-->
+
 <!-- 模态框（Modal）:用户信息维护界面：用户删除时的确认窗口:START-->
 <div class="modal fade" id="userdelmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true" data-backdrop="static" data-keyboard="false">

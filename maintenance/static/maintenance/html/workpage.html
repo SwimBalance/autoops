@@ -109,6 +109,60 @@
         </nav>
     </div>
 </div>
+<!-- 服务启停：mysql工作页-->
+<div id="mysql_workpage">
+    <div style="border: 1px;">
+        <div class="row">
+            <div class="col-lg-7" style="padding: 0px">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li class="active">Mysql</li>
+                </ol>
+            </div>
+            <!--<div class="row"> -->
+            <div class="col-lg-5" style="padding: 1px">
+                <div class="input-group">
+                    <input id="search_mysql" type="text" class="form-control" placeholder="IP/服务器名称"
+                           onkeydown="if(event.keyCode==13) {searchmysql()}">
+                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="searchmysql()">查找</button>
+                        </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+            <!--</div> /.row -->
+            <table class="table table-bordered table-hover table-condensed">
+                <!--<caption><strong>Tomcat应用服务器清单</strong></caption> -->
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>IP</th>
+                    <th>主机名</th>
+                    <th>概要</th>
+                    <th>状态</th>
+                    <th>检查</th>
+                    <th>开启</th>
+                    <th>停止</th>
+                </tr>
+                </thead>
+                <tbody class="text">
+                <!--load data form js:$("ul[id='servicemgr'] li").click(function ()-->
+                </tbody>
+            </table>
+        </div>
+        <nav class="preandnext" style="text-align: center">
+            <label hidden id="curnpage"></label>
+            <ul class="pager">
+                <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
+                    <strong> </strong> 页</h5></label>
+                <li class="previous" onclick="createMysqlPage(this)" value="0"><a href="#"><span
+                        aria-hidden="true">&larr;</span> 上一页</a></li>
+                <li class="next" onclick="createMysqlPage(this)" value="9999"><a href="#">下一页 <span
+                        aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
 <!-- 服务启停：apache工作页-->
 <div id="apache_workpage">
     <div style="border: 1px;">
@@ -123,7 +177,7 @@
             <div class="col-lg-5" style="padding: 1px">
                 <div class="input-group">
                     <input id="search_apache" type="text" class="form-control" placeholder="IP/服务器名称"
-                           onkeydown="if(event.keyCode==13) {searchtomcat()}">
+                           onkeydown="if(event.keyCode==13) {searchapache()}">
                     <span class="input-group-btn">
                             <button class="btn btn-default" type="button" onclick="searchapache()">查找</button>
                         </span>
@@ -203,7 +257,7 @@
             <ul class="pager">
                 <label><h5>当前第<strong> </strong> 页，显示第 <strong> </strong> 到 第 <strong> </strong> 条记录，总共
                     <strong> </strong> 页</h5></label>
-                <li class="previous"  id='test123' onclick="createNginxPage(this)" value="0"><a href="#"><span
+                <li class="previous" id='test123' onclick="createNginxPage(this)" value="0"><a href="#"><span
                         aria-hidden="true">&larr;</span> 上一页</a></li>
                 <li class="next" onclick="createNginxPage(this)" value="9999"><a href="#">下一页 <span
                         aria-hidden="true">&rarr;</span></a></li>

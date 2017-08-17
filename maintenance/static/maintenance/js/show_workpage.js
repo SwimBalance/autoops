@@ -65,6 +65,18 @@ $(function () {
                     loadnginxdata(datas)
                 }
             })
+        }else if (this.id == 'mysql') {
+            $("#workpage").empty().load("/static/maintenance/html/workpage.html #mysql_workpage");
+            $("#modal_page").empty().load("/static/maintenance/html/modal.html #myMysqlModal");
+            $.ajax({
+                type: "GET",
+                url: "./../mysqlData/",
+                data: {page: 1},
+                datatype: 'json',
+                success: function (datas) {
+                    loadmysqldata(datas)
+                }
+            })
         }
     });
 });
@@ -77,7 +89,7 @@ function opt_tomcat(obj) {
     //定时器变量
     var timer1;
     //获取modal的body
-    var tomcat_mes = $("#message");
+    var tomcat_mes = $("#tomcat_message");
     //获取button上记录的该操作的超时时间
     var opstime = obj.value;
     //初始化进度条为0
@@ -133,68 +145,6 @@ function opt_tomcat(obj) {
         }, 1000);
     }
 }
-// 针对oracle数据库服务器的操作--by lvshaohe
-function opt_oracle(obj) {
-    //进度条当前宽度
-    var count = 0;
-    var widthcount = 0;
-    //定时器变量
-    var timer1;
-    //获取modal的body
-    var tomcat_mes = $("#message");
-    //获取button上记录的该操作的超时时间
-    var opstime = obj.value;
-    //初始化进度条为0
-    $('#progstatus').css('width', '0%');
-    tomcat_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
-    //点击button后，将当前button标记为disabled的状态
-    $(obj).addClass('disabled');
-    //弹出modal的关闭按钮也变为disabled状态
-    $("#messagemodal").prop('disabled', true);
-    var id = obj.id;
-    var action = obj.name;
-    $.ajax({
-        type: 'Get',
-        url: './../operation/oracle',
-        data: {'id': id, 'action': action},
-        //ajax调用后触发刷新进度条的任务
-        beforSend: showprogress(),
-        success: function (data) {
-            tomcat_mes.empty().append(data['message']);
-            //更新状态
-            if (data['status'] == '201') {
-                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign',});
-                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库正常运行'}).tooltip('fixTitle');
-            } else if (data['status'] == '202') {
-                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
-                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库状态异常，请联系管理员'}).tooltip('fixTitle');
-            } else if (data['status'] == '203') {
-                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
-                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库已关闭'}).tooltip('fixTitle');
-            }
-            $(obj).removeClass('disabled');
-            $("#messagemodal").removeAttr("disabled");
-            //后台调用成功，停止定时器，同时将进度条刷新到100%
-            clearInterval(timer1);
-            $('#progstatus').css("width", "100%");
-        }
-    });
-    //启动定时器，根据超时时间刷新进度条的状态
-    function showprogress() {
-        //定义一个定时器，开始刷新进度条
-        timer1 = setInterval(function () {
-            count = count + 1;
-            // alert(count);
-            widthcount = (count / opstime) * 100;
-            $('#progstatus').css("width", widthcount + "%");
-            //如果达到超时时间，停止定时器
-            if (parseInt(count) == parseInt(opstime)) {
-                clearInterval(timer1);
-            }
-        }, 1000);
-    }
-}
-
 // tomcat分页实现
 function createTomcatPage(obj) {
     var page_number = '';
@@ -219,32 +169,6 @@ function createTomcatPage(obj) {
         }
     });
 }
-//oracle分页--by lvshaohe
-function createOraclePage(obj) {
-    var page_number = '';
-    var to_page = obj.value;
-    var current_page = $('#curnpage').text();
-    if (to_page == '0') {
-        if (current_page == '1') {
-            page_number = current_page
-        } else {
-            page_number = parseInt(current_page) - 1
-        }
-    } else if (to_page == '9999') {
-        page_number = parseInt(current_page) + 1;
-    }
-    $.ajax({
-        type: "GET",
-        url: "./../oracleData/",
-        datatype: 'json',
-        data: {'page': page_number},
-        success: function (datas) {
-            loadoracledata(datas)
-        }
-    });
-}
-
-
 //导入tomcat数据
 function loadtomcatdata(data) {
     //获取数据
@@ -314,6 +238,22 @@ function loadtomcatdata(data) {
         $("[data-toggle='tooltip']").tooltip();
     });
 }
+//tomcat搜索栏
+function searchtomcat() {
+
+    var search_val = $('#search_tom').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchtomcat/",
+        data: {'data': search_val},
+        datatype: "json",
+        success: function (datas) {
+            loadtomcatdata(datas);
+            $('#preandnext').empty()
+        }
+    })
+}
+
 //加载oracle数据库相关信息--by lvshaohe
 function loadoracledata(data) {
     //获取数据
@@ -345,9 +285,9 @@ function loadoracledata(data) {
     var html = '';
     for (var i = 0; i < datas.length; i++) {
         var id = datas[i]['id'];
-        var ip = datas[i]['IP'];
+        var ip = datas[i]['ipaddress'];
         var sid = datas[i]['sid'];
-        var dec = datas[i]['hostname'];
+        var hostname = datas[i]['machine'];
         var status = datas[i]['status'];
         var startwait = datas[i]['startwait'];
         var stopwait = datas[i]['stopwait'];
@@ -355,8 +295,8 @@ function loadoracledata(data) {
         html += '<tr>';
         html += '<td>' + id + '</td>';
         html += '<td>' + ip + '</td>';
+        html += '<td>' + hostname + '</td>';
         html += '<td>' + sid + '</td>';
-        html += '<td>' + dec + '</td>';
         //更新状态
         if (status == '201') {
             html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Oracle数据库正常运行"></span></td>';
@@ -372,34 +312,280 @@ function loadoracledata(data) {
         html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
         html += '<td>' + '<button id=' + id + ' onclick="opt_oracle(this)" name="stop_oracle" class="btn btn-default" data-toggle="modal" data-target="#myOracleModal" value="' + stopwait + '">';
         html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
-        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="check_tomcat" class="btn btn-default">';
-        // html += '<span class="glyphicon glyphicon-align-left" aria-hidden="true">' + '</span>';
-        // html += '</button>' + '</td>';
-        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat">start</button>' + '</td>';
-        // html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="stop_tomcat">stop</button>' + '</td>';
-        // html += '</tr>';
     }
     text.append(html);
     $(function () {
         $("[data-toggle='tooltip']").tooltip();
     });
 }
-
-//tomcat搜索栏
-function searchtomcat() {
-
-    var search_val = $('#search_tom').val();
+//oracle分页--by lvshaohe
+function createOraclePage(obj) {
+    var page_number = '';
+    var to_page = obj.value;
+    var current_page = $('#curnpage').text();
+    if (to_page == '0') {
+        if (current_page == '1') {
+            page_number = current_page
+        } else {
+            page_number = parseInt(current_page) - 1
+        }
+    } else if (to_page == '9999') {
+        page_number = parseInt(current_page) + 1;
+    }
     $.ajax({
         type: "GET",
-        url: "/../searchtomcat/",
+        url: "./../oracleData/",
+        datatype: 'json',
+        data: {'page': page_number},
+        success: function (datas) {
+            loadoracledata(datas)
+        }
+    });
+}
+//oracle搜索栏
+function searchoracle() {
+    var search_val = $('#search_oracle').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchoracle/",
         data: {'data': search_val},
         datatype: "json",
         success: function (datas) {
-            loadtomcatdata(datas);
+            loadoracledata(datas);
             $('#preandnext').empty()
         }
     })
 }
+// 针对oracle数据库服务器的操作--by lvshaohe
+function opt_oracle(obj) {
+    //进度条当前宽度
+    var count = 0;
+    var widthcount = 0;
+    //定时器变量
+    var timer1;
+    //获取modal的body
+    var oracle_mes = $("#oracle_message");
+    //获取button上记录的该操作的超时时间
+    var opstime = obj.value;
+    //初始化进度条为0
+    $('#progstatus').css('width', '0%');
+    oracle_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    $("#messagemodal").prop('disabled', true);
+    var id = obj.id;
+    var action = obj.name;
+    $.ajax({
+        type: 'Get',
+        url: './../operation/oracle',
+        data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend: showprogress(),
+        success: function (data) {
+            oracle_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '201') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign',});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库正常运行'}).tooltip('fixTitle');
+            } else if (data['status'] == '202') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库状态异常，请联系管理员'}).tooltip('fixTitle');
+            } else if (data['status'] == '203') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Oracle数据库已关闭'}).tooltip('fixTitle');
+            }
+            $(obj).removeClass('disabled');
+            $("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            $('#progstatus').css("width", "100%");
+        }
+    });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1 = setInterval(function () {
+            count = count + 1;
+            // alert(count);
+            widthcount = (count / opstime) * 100;
+            $('#progstatus').css("width", widthcount + "%");
+            //如果达到超时时间，停止定时器
+            if (parseInt(count) == parseInt(opstime)) {
+                clearInterval(timer1);
+            }
+        }, 1000);
+    }
+}
+
+
+//加载mysql数据库相关信息--by lvshaohe
+function loadmysqldata(data) {
+    //获取数据
+    var datas = data['results'];
+    var current_page = data['page'];
+    var firstrecord = (current_page - 1) * 9 + 1;
+    var lastrecord = firstrecord + datas.length - 1;
+    var total = Math.ceil(data['total'] / 9);
+    //跟新label标签的内容
+    $('#curnpage').empty().append(current_page);
+    //导入分页栏的数据
+    if (current_page == 1) {
+        $('.pager .previous').addClass('disabled')
+    } else {
+        $('.pager .previous').removeClass('disabled')
+    }
+    if (current_page == total) {
+        $('.pager .next').addClass('disabled')
+    } else {
+        $('.pager .next').removeClass('disabled')
+    }
+    $('.pager strong:eq(0)').empty().append(current_page);
+    $('.pager strong:eq(1)').empty().append(firstrecord);
+    $('.pager strong:eq(2)').empty().append(lastrecord);
+    $('.pager strong:eq(3)').empty().append(total);
+    //导入表格内容
+    var text = $('.text');
+    text.empty();
+    var html = '';
+    for (var i = 0; i < datas.length; i++) {
+        var id = datas[i]['id'];
+        var ip = datas[i]['ipaddress'];
+        var host = datas[i]['machine'];
+        var dec = datas[i]['description'];
+        var status = datas[i]['status'];
+        var startwait = datas[i]['startwait'];
+        var stopwait = datas[i]['stopwait'];
+        var checkwait = datas[i]['checktime'];
+        html += '<tr>';
+        html += '<td>' + id + '</td>';
+        html += '<td class="ipaddress">' + ip + '</td>';
+        html += '<td>' + host + '</td>';
+        html += '<td>' + dec + '</td>';
+        // html += '<td class="status">' + status + '</td>';
+        //更新状态
+        if (status == '301') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-ok-sign" aria-hidden="true" data-toggle="tooltip" title="Mysql正常运行"></span></td>';
+        } else if (status == '302' || status == '304' || status == '305') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" data-toggle="tooltip" title="Mysql状态异常，请联系管理员"></span></td>';
+        } else if (status == '303') {
+            html += '<td class="status" ><span class="glyphicon glyphicon-remove-sign" aria-hidden="true" data-toggle="tooltip" title="Mysql数据库已关闭"></span></td>';
+        }
+        html += '<td>' + '<button id=' + id + ' onclick="opt_mysql(this)" name="check_mysql" class="btn btn-default" data-toggle="modal" data-target="#myMysqlModal" value="' + checkwait + '">';
+        html += '<span class="glyphicon glyphicon-check" aria-hidden="true"></span></button></td>';
+        //html += '<td>' + '<button id=' + id + ' onclick="opt_tomcat(this)" name="start_tomcat" class="btn btn-default" data-toggle="modal" data-target="#myModal">';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_mysql(this)" name="start_mysql" class="btn btn-default" data-toggle="modal" data-target="#myMysqlModal" value="' + startwait + '">';
+        html += '<span class="glyphicon glyphicon-play" aria-hidden="true"></span></button></td>';
+        html += '<td>' + '<button id=' + id + ' onclick="opt_mysql(this)" name="stop_mysql" class="btn btn-default" data-toggle="modal" data-target="#myMysqlModal" value="' + stopwait + '">';
+        html += '<span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button></td>';
+        html += '</tr>';
+    }
+    text.append(html);
+    //开启tooltip
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+}
+//mysql分页--by lvshaohe
+function createMsqlPage(obj) {
+    var page_number = '';
+    var to_page = obj.value;
+    var current_page = $('#curnpage').text();
+    if (to_page == '0') {
+        if (current_page == '1') {
+            page_number = current_page
+        } else {
+            page_number = parseInt(current_page) - 1
+        }
+    } else if (to_page == '9999') {
+        page_number = parseInt(current_page) + 1;
+    }
+    $.ajax({
+        type: "GET",
+        url: "./../mysqlData/",
+        datatype: 'json',
+        data: {'page': page_number},
+        success: function (datas) {
+            loadmysqldata(datas)
+        }
+    });
+}
+//mysql搜索栏
+function searchmysql() {
+    var search_val = $('#search_mysql').val();
+    $.ajax({
+        type: "GET",
+        url: "/../searchmysql/",
+        data: {'data': search_val},
+        datatype: "json",
+        success: function (datas) {
+            loadmysqldata(datas);
+            $('#preandnext').empty()
+        }
+    })
+}
+// 针对mysql数据库服务器的操作--by lvshaohe
+function opt_mysql(obj) {
+    //进度条当前宽度
+    var count = 0;
+    var widthcount = 0;
+    //定时器变量
+    var timer1;
+    //获取modal的body
+    var mysql_mes = $("#mysql_message");
+    //获取button上记录的该操作的超时时间
+    var opstime = obj.value;
+    //初始化进度条为0
+    $('#progstatus').css('width', '0%');
+    mysql_mes.empty().append("正在玩命操作，预计" + opstime + "秒内完成！");
+    //点击button后，将当前button标记为disabled的状态
+    $(obj).addClass('disabled');
+    //弹出modal的关闭按钮也变为disabled状态
+    $("#messagemodal").prop('disabled', true);
+    var id = obj.id;
+    var action = obj.name;
+    $.ajax({
+        type: 'Get',
+        url: './../operation/mysql',
+        data: {'id': id, 'action': action},
+        //ajax调用后触发刷新进度条的任务
+        beforSend: showprogress(),
+        success: function (data) {
+            mysql_mes.empty().append(data['message']);
+            //更新状态
+            if (data['status'] == '301') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-ok-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Mysql正常运行'}).tooltip('fixTitle');
+            } else if (data['status'] == '302' || data['status'] == '304' || data['status'] == '305') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-exclamation-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Mysql异常，请联系管理员'}).tooltip('fixTitle');
+            } else if (data['status'] == '303') {
+                $(obj).parent().prevAll('.status').children('span').attr({'class': 'glyphicon glyphicon-remove-sign'});
+                $(obj).parent().prevAll('.status').children('span').attr({'title': 'Mysql已关闭'}).tooltip('fixTitle');
+            }
+            $(obj).removeClass('disabled');
+            $("#messagemodal").removeAttr("disabled");
+            //后台调用成功，停止定时器，同时将进度条刷新到100%
+            clearInterval(timer1);
+            $('#progstatus').css("width", "100%");
+        }
+    });
+    //启动定时器，根据超时时间刷新进度条的状态
+    function showprogress() {
+        //定义一个定时器，开始刷新进度条
+        timer1 = setInterval(function () {
+            count = count + 1;
+            //alert(count);
+            widthcount = (count / opstime) * 100;
+            $('#progstatus').css("width", widthcount + "%");
+            //如果达到超时时间，停止定时器
+            if (parseInt(count) == parseInt(opstime)) {
+                clearInterval(timer1);
+            }
+        }, 1000);
+    }
+}
+
 
 //导入apache数据
 function loadapachedata(data) {
