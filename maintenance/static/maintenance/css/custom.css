@@ -55,3 +55,29 @@
     pointer-events: none;
     cursor: default;
 }
+
+canvas {
+    display: block;
+    vertical-align: bottom;
+}
+
+#box {
+    width: 100%;
+    height: 100%;
+    background-color: #F7FAFC;
+    /*background-image: url('');*/
+    background-size: cover;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -9999;
+}
+
+.loginform{
+   width: 25%; border:solid 1px #c4e3f3; text-align: center;margin-left: 36.5%;background-color: white;
+border-radius: 10px;position: absolute;top: 28%;
+}
