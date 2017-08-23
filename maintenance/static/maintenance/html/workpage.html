@@ -376,7 +376,7 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="form-group col-lg-4">
-                        <button id='startchecksystem' type="submit" class="btn btn-primary">开始检查</button>
+                        <button id='startchecksystem' type="button" class="btn btn-primary" onclick="opt_checksystem(this)">开始检查</button>
                     </div>
 
                     <div class="form-group col-lg-4">
@@ -530,11 +530,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-5" style="border: solid lavender 1px;min-height: 500px">
-            <p style="color: green">server 1 check ok!</p>
-            <p style="color: red">server 2 check error!</p>
-            <p>server 3 check ok!</p>
+        <div class="col-lg-5" id= "checkSystemTask" style="border: solid lavender 1px;min-height: 500px">
+
         </div>
+
     </div>
 </div>
 

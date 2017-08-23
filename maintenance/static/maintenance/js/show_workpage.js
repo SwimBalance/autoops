@@ -65,7 +65,7 @@ $(function () {
                     loadnginxdata(datas)
                 }
             })
-        }else if (this.id == 'mysql') {
+        } else if (this.id == 'mysql') {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #mysql_workpage");
             $("#modal_page").empty().load("/static/maintenance/html/modal.html #myMysqlModal");
             $.ajax({
@@ -1267,6 +1267,7 @@ function getmachinelist() {
         datatype: 'json',
         data: {systemname: systemname},
         success: function (data) {
+            window.localStorage.setItem('machines', JSON.stringify(data)); //将获取的数据存到本地
             for (i = 0; i < data.length; i++) {
                 $("#machinelist").append('<option title="' + data[i]['types'] + '" value="' + data[i]['levels'] + '">' + data[i]['machinename'] + '</option>');
                 //$("#machinelist").append('<option>'+i+'</option>');
@@ -1305,12 +1306,62 @@ function getmachinelist() {
 
                 }
             }
-
+            //初始化任务清单
+            initCheckSystemTask(data)
         }
     });
     $('#machinelist').selectpicker('render');
     $('#machinelist').selectpicker('refresh');
     $('#machinelist').selectpicker();
+}
+//初始化任务清单
+function initCheckSystemTask(data) {
+    //创建表格
+    var myCheckSystem = $('#checkSystemTask');
+    var myCheckSystem_table = $('<table class="table"></table>');
+    var myCheckSystem_thead = $('<thead><tr><td>系统名称</td><td>机器名称</td><td>运行结果</td></tr></thead>');
+    var myCheckSystem_tbody = $('<tbody></tbody>').addClass('progress_tboday');
+    //添加数据行
+    for (var i = 0; i < data.length; i++) {
+        var system_name = data[i]['systemname'];
+        var host = data[i]['machinename'];
+        var line = '';
+        line += '<tr>';
+        line += '<td>' + system_name + '</td>';
+        line += '<td>' + host + '</td>';
+        var progressbar = '';
+        progressbar += '<td>';
+        progressbar += '<div class="progress">';
+        progressbar += '<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">';
+        progressbar += '<span class="sr-only">60% Complete</span>';
+        progressbar += '</div>' + '</div>';
+        progressbar += '</td>';
+        line += progressbar;
+        line += '</tr>';
+        myCheckSystem_tbody.append(line)
+    }
+
+    myCheckSystem_table.append(myCheckSystem_thead).append(myCheckSystem_tbody);
+    myCheckSystem.text('操作结果：').append(myCheckSystem_table)
+}
+//检查系统操作
+function opt_checksystem(obj) {
+    //获取本地存储的机器数据
+    var mymachines = JSON.parse(window.localStorage.getItem("machines"));
+    //alert(mymachines.length);
+    $.ajax({
+        type: "POST",
+        url: "./../operation/checksystem/",
+        datatype: 'json',
+        data: {
+            'machines': mymachines,
+            'action': 'checksystem'
+        },
+        success: function (datas) {
+            loadapachedata(datas)
+        }
+    })
+
 }
 
 //服务器选中后触发修改图中的服务器

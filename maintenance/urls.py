@@ -36,5 +36,5 @@ urlpatterns = [
     # 【常用工具：系统健康检查】
     url(r'^operation/getsystemlist/$', views.get_system_list, name='getsystemlist'),
     url(r'^operation/getmachinelist/$', views.get_machine_list, name='getmachinelist'),
-
+    url(r'^operation/checksystem/$', views.opt_checksystem),
 ]

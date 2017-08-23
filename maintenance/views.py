@@ -6,6 +6,7 @@ from django.db import connection
 from .tools.dbtools import dictfetchall
 import datetime
 from django.urls import reverse
+from .tools.ansibletools import AnsibleAPI
 
 
 # 给页面增加验证功能装饰器,如果浏览器cookies中没有用户信息，返回主页面
@@ -766,6 +767,7 @@ def get_system_list(request):
         # print('username')
     sql_getsystemlist = "select id,systemname,systemadmin,devadmin,description,levels" \
                         " from systeminfo where systemadmin='%s'" % current_username
+    print(sql_getsystemlist)
     with connection.cursor() as cursor:
         cursor.execute(sql_getsystemlist)
         data = dictfetchall(cursor)
@@ -783,6 +785,18 @@ def get_machine_list(request):
         data = dictfetchall(cursor)
     # print(sql_getsystemlist,data)
     return JsonResponse(data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
+# 系统检查启停操作
+@csrf_exempt
+def opt_checksystem(request):
+    hostlist = ['10.26.222.210']
+    playbooks = ['/tempdir/ancode/test.yml']
+    pl = AnsibleAPI(hostlist, playbooks)
+    # pl.runplaybook()
+    return JsonResponse({"message":"OK"})
+
+
     #####################################################
     #            常用工具=====END                       #
     #####################################################
