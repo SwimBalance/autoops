@@ -7,6 +7,10 @@ from .tools.dbtools import dictfetchall
 import datetime
 from django.urls import reverse
 from .tools.ansibletools import AnsibleAPI
+import threading
+import multiprocessing
+import time
+import uuid
 
 
 # 给页面增加验证功能装饰器,如果浏览器cookies中没有用户信息，返回主页面
@@ -790,13 +794,122 @@ def get_machine_list(request):
 # 系统检查启停操作
 @csrf_exempt
 def opt_checksystem(request):
-    hostlist = ['10.26.222.210']
-    playbooks = ['/tempdir/ancode/test.yml']
-    pl = AnsibleAPI(hostlist, playbooks)
-    # pl.runplaybook()
-    return JsonResponse({"message":"OK"})
+    machines = eval(request.POST.get('machines'))
+    system = machines[0]['systemname']
+    hostlist = [machine['machineip'] for machine in machines]
+    hostlist = list(set(hostlist))
+    # print(hostlist)
+    myuuid = str(uuid.uuid1())
+    for item in hostlist:
+        host = [item]
+        # print(host)
+        ymlfile = ['/tempdir/ancode/test.yml']
+        task = multiprocessing.Process(
+            target=AnsibleAPI(hostlist=host, playbooks=ymlfile, uuid=myuuid, systemname=system).runplaybook)
+        task.start()
+    # anl = AnsibleAPI(
+    #     hostlist = ['10.26.222.216'],
+    #     playbooks = ['/tempdir/ancode/test.yml'],
+    #     uuid = myuuid,
+    #     systemname = system
+    # )
+    # an2 = AnsibleAPI(
+    #     hostlist = [ '10.26.222.213'],
+    #     playbooks = ['/tempdir/ancode/test.yml'],
+    #     uuid = myuuid,
+    #     systemname = system
+    # )
+    # 多进程
+    # processes = []
+    # #p1 = multiprocessing.Process(name='process_one', target=anl.runplaybook)
+    # p1 = multiprocessing.Process(target=anl.runplaybook)
+    # p2 = multiprocessing.Process(target=an2.runplaybook)
+    # processes.append(p1)
+    # processes.append(p2)
+    # for p in processes:
+    #     p.start()
 
+    # machine_count = request.POST.get('count')
+    # check_list = request.POST
+    # task = []
+    # for i in range(0, int(machine_count)):
+    #     key = 'machines[' + str(i) + '][machineip]'
+    #     # print(check_list.get(key))
+    #     ipaddress = [check_list.get(key)]
+    #     ymlfile = ['/tempdir/ancode/test.yml']
+    #     # print(i, ipaddress, ymlfile)
+    #     # plist.append(AnsibleAPI(ipaddress,ymlfile))
+    #     # print(plist[i])
+    #     #task.append(multiprocessing.Process(target=plist[i].runplaybook))
+    #     #task[i].start()
+    #     #hostlist1 = ['10.26.222.213']
+    #     #playbooks1 = ['/tempdir/ancode/test.yml']
+    #     p= AnsibleAPI(ipaddress, ymlfile)
+    #     task.append(multiprocessing.Process(target=p.runplaybook))
+    #     # task.append(t1)
+    # # print(playbook)
+    # for t in task:
+    #     # t.daemon=True
+    #     t.start()
 
-    #####################################################
-    #            常用工具=====END                       #
-    #####################################################
+    # hostlist1 = ['10.26.222.213']
+    # playbooks1 = ['/tempdir/ancode/test.yml']
+    # p1 = AnsibleAPI(hostlist1, playbooks1)
+    #
+    # hostlist2 = ['10.26.222.210']
+    # playbooks2 = ['/tempdir/ancode/test.yml']
+    # p2 = AnsibleAPI(hostlist2, playbooks2)
+    #
+    # processes = []
+    # t1 = multiprocessing.Process(target=p1.runplaybook)
+    # #t1.start()
+    # processes.append(t1)
+    # t2 = multiprocessing.Process(target=p2.runplaybook)
+    # #t2.start()
+    # processes.append(t2)
+    # for t in processes:
+    #     # t.daemon=True
+    #     t.start()
+    # # mainThread = threading.current_thread()
+    # for t in processes:
+    #     t.join()
+    # threads = []
+    # thr1 = threading.Thread(target=func1, args=(u'线程1',))
+    # threads.append(thr1)
+    # thr2 = threading.Thread(target=func2, args=(u'线程2',))
+    # threads.append(thr2)
+    #
+    # thr3 = threading.Thread(target=func2, args=(u'线程3',))
+    # threads.append(thr3)
+    # print("%s===执行开始了。\n" %time.time())
+    # for t in threads:
+    #     t.setDaemon(True)
+    #     t.start()
+    #
+    # for t in threads:
+    #     t.join()
+    #     # join()的作用是，在子线程完成运行之前，阻塞父线程。
+    # print("%s===执行结束了。\n" % time.time())
+
+    return JsonResponse({"message": "OK"})
+
+# class ansibleThread(threading.Thread):
+#     def run(self):
+#         print("start.... %s" % (self.getName(),))
+#         for i in range(10):
+#             time.sleep(1)
+#             print(i)
+#         print("end.... %s" % (self.getName(),))
+# def func1(var):
+#     for i in range(3):
+#         print("%s===func1 running %s\n" % (time.time(), var))
+#         time.sleep(3)
+#
+# def func2(var):
+#     for i in range(2):
+#         print("%s===func2 running %s\n" % (time.time(), var))
+#         time.sleep(2)
+
+#####################################################
+#            常用工具=====END                       #
+#####################################################

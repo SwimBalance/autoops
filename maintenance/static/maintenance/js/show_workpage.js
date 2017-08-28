@@ -976,6 +976,9 @@ $(function () {
     $("ul[id='systemsetting'] li").click(function () {
         if (this.id == 'usermanagement') {
             $("#workpage").empty().load("/static/maintenance/html/workpage.html #usermanagement_workpage");
+            //$("#modal_page").empty().load("/static/maintenance/html/modal.html #userdelmodal #userchangemodal #addusermodal");
+            //$("#modal_page").empty().load("/static/maintenance/html/modal.html #userchangemodal");
+            //$("#modal_page").empty().load("/static/maintenance/html/modal.html #addusermodal");
             $.ajax({
                 type: "GET",
                 url: "./../usermanagementData/",
@@ -1033,7 +1036,7 @@ function loaduserdata(datas) {
         }
     }
     text.append(html);
-    html = '<button id="btadduser" class="btn btn-primary" data-toggle="modal" data-target="#addusermodal"><span class="glyphicon glyphicon-plus"></span> 添加新用户</button>'
+    html = '<button id="btadduser" onclick="opt_usermanagement_add(this)" class="btn btn-primary" data-toggle="modal" data-target="#addusermodal"><span class="glyphicon glyphicon-plus"></span> 添加新用户</button>'
     text.append(html);
     if (group != 'admin') {
         $("#btadduser").hide();
@@ -1053,10 +1056,14 @@ function getcookie(objname) {
 
 // 针对用户信息维护按钮的操作，点击后将部分值记录到modal中：
 function opt_usermanagement_delete(obj) {
-    var id = obj.id;
-    var action = obj.name;
-    var del_diag = $("#messageuserdel");
-    del_diag.empty().append('<label id="' + id + '"' + 'title="' + action + '">真的要删除用户' + id + "吗?" + '</label>');
+    $("#modal_page").empty().load("/static/maintenance/html/modal.html #userdelmodal", function () {
+        $('#userdelmodal').modal('show');
+        var id = obj.id;
+        var action = obj.name;
+        var del_diag = $("#messageuserdel");
+        del_diag.empty().append('<label id="' + id + '"' + 'title="' + action + '">真的要删除用户' + id + "吗?" + '</label>');
+    });
+
 }
 //用户信息维护：modal中确认删除用户信息，发送数据到后台
 function deleteuser(obj) {
@@ -1090,23 +1097,27 @@ function refreshdata() {
 
 //用户信息维护功能中,点击修改按钮来获取该用户所对应的信息
 function opt_usermanagement_change(obj) {
-    $('#savemess').attr("disabled", false);
-    $('#savemess').text('保存');
-    $('#messagemodal2').text('取消');
-    var userid = obj.id;
-    $.ajax({
-        type: "GET",
-        url: "./../operation/modifyuserdata/",
-        datatype: 'json',
-        data: {userid: userid},
-        success: function (datas) {
-            $("#username").val(datas[1]);  //获取后台传输过来的用户名
-            $("#password").val(datas[2]);  //获取后台传输过来的密码
-            $("#email").val(datas[3]);     //获取后台传输过来的邮箱
-            $("#privilege").val(datas[4]);  //获取后台传输过来的权限
-            $("#group").val(datas[5]);     //获取后台传输过来的属组
-        }
-    })
+    $("#modal_page").empty().load("/static/maintenance/html/modal.html #userchangemodal", function () {
+        $('#userchangemodal').modal('show');
+        $('#savemess').attr("disabled", false);
+        $('#savemess').text('保存');
+        $('#messagemodal2').text('取消');
+        var userid = obj.id;
+        $.ajax({
+            type: "GET",
+            url: "./../operation/modifyuserdata/",
+            datatype: 'json',
+            data: {userid: userid},
+            success: function (datas) {
+                $("#username").val(datas[1]);  //获取后台传输过来的用户名
+                $("#password").val(datas[2]);  //获取后台传输过来的密码
+                $("#email").val(datas[3]);     //获取后台传输过来的邮箱
+                $("#privilege").val(datas[4]);  //获取后台传输过来的权限
+                $("#group").val(datas[5]);     //获取后台传输过来的属组
+            }
+        })
+    });
+
 }
 
 //用户信息修改功能
@@ -1142,10 +1153,13 @@ function opt_updata() {
 
 //添加用户
 function opt_usermanagement_add() {
+    $("#modal_page").empty().load("/static/maintenance/html/modal.html #addusermodal", function () {
+        $('#addusermodal').modal('show');
+        $('#saveuser').attr("disabled", false);
+        $('#saveuser').text('确认添加');
+        $('#messagemodal3').text('取消');
+    });
 
-    $('#saveuser').attr("disabled", false);
-    $('#saveuser').text('确认添加');
-    $('#messagemodal3').text('取消');
 }
 //确认添加
 function saveuser() {
@@ -1347,18 +1361,20 @@ function initCheckSystemTask(data) {
 //检查系统操作
 function opt_checksystem(obj) {
     //获取本地存储的机器数据
-    var mymachines = JSON.parse(window.localStorage.getItem("machines"));
-    //alert(mymachines.length);
+    var mymachines = window.localStorage.getItem("machines");
+    var count = mymachines.length;
     $.ajax({
         type: "POST",
         url: "./../operation/checksystem/",
         datatype: 'json',
         data: {
             'machines': mymachines,
-            'action': 'checksystem'
+            'action': 'checksystem',
+            'count': count
         },
         success: function (datas) {
-            loadapachedata(datas)
+            //loadapachedata(datas)
+            alert(datas['message'])
         }
     })
 

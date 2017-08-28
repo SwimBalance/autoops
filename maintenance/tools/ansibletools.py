@@ -2,6 +2,7 @@
 # coding=utf-8
 import json
 import logging
+from django.db import connection
 from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from ansible.inventory import Inventory
@@ -15,31 +16,43 @@ import ansible.executor.task_result
 
 
 class ResultsCollector(CallbackBase):
-    def __init__(self, *args, **kwargs):
-        super(ResultsCollector, self).__init__(*args, **kwargs)
+    def __init__(self, taskid, system):
+        super(ResultsCollector, self).__init__()
+        self.taskid = taskid
+        self.system = system
+
 
     def _get_return_data(self, result):
         try:
             if result.get('msg'):
                 return_data = result.get('msg')
-                print(1)
+                #print(1)
             elif result.get('stderr'):
                 return_data = result.get('stderr')
-                print(2)
+                #print(2)
             else:
                 return_data = result
-                print(3)
+                #print(3)
         except:
             pass
         return return_data
 
     def v2_runner_on_ok(self, result):
-        host = result._host.get_name()
-        self.runner_on_ok(host, result._result)
-        print(result.task_name,host,result._result['stdout'])
-        return_data = self._get_return_data(result._result)
-        # print(result._result)
-        # logging.warning('===v2_runner_on_ok====host=%s===result=%s' % (host, return_data))
+        ipaddress = result._host
+        # print('taskid = '+ self.taskid)
+        taskname = result.task_name
+        # print(result._result.keys())
+        start = result._result['start']
+        end = result._result['end']
+        res = result._result['stdout_lines']
+        status = 'OK'
+        sqlstatement = "insert into checksystem(taskid,ipaddress,result,taskname,starttime,endtime,status,systemname) " \
+                       "VALUES ('%s', '%s', \"%s\", '%s', '%s', '%s', '%s', '%s')" % (
+                           self.taskid, ipaddress, res, taskname, start, end, status, self.system)
+        print(sqlstatement)
+        with connection.cursor() as cursor:
+            cursor.execute(sqlstatement)
+        #logging.warning('===v2_runner_on_ok====host=%s===result=%s' % (ipaddress, result._result))
         # print(return_data.keys())
         # print(result.keys())
 
@@ -48,29 +61,43 @@ class ResultsCollector(CallbackBase):
         host = result._host.get_name()
         self.runner_on_failed(host, result._result, ignore_errors)
         return_data = self._get_return_data(result._result)
+        #print(result)
         logging.warning('===v2_runner_on_failed====host=%s===result=%s' % (host, return_data))
 
 
     def v2_runner_on_unreachable(self, result):
-        host = result._host.get_name()
-        self.runner_on_unreachable(host, result._result)
-        return_data = self._get_return_data(result._result)
-        logging.warning('===v2_runner_on_unreachable====host=%s===result=%s' % (host, return_data))
-
-
-    def v2_runner_on_skipped(self, result):
-        if C.DISPLAY_SKIPPED_HOSTS:
-            host = result._host.get_name()
-            self.runner_on_skipped(host, self._get_item(getattr(result._result, 'results', {})))
-            logging.warning("this task does not execute,please check parameter or condition.")
-
-
-    def v2_playbook_on_stats(self, stats):
-        logging.warning('===========palybook executes completed========')
+        ipaddress = result._host
+        # # print('taskid = '+ self.taskid)
+        # taskname = result.task_name
+        # # print(result._result.keys())
+        # start = result._result['start']
+        # end = result._result['end']
+        # res = result._result['stdout_lines']
+        print(ipaddress,result._result)
+        status = 'UNREACHABLE'
+        #print(status)
+        # sqlstatement = "insert into checksystem(taskid,ipaddress,result,taskname,starttime,endtime,status,systemname) " \
+        #                "VALUES ('%s', '%s', \"%s\", '%s', '%s', '%s', '%s', '%s')" % (
+        #                    self.taskid, ipaddress, res, taskname, start, end, status, self.system)
+        # print(sqlstatement)
+        # with connection.cursor() as cursor:
+        #     cursor.execute(sqlstatement)
+    #     logging.warning('===v2_runner_on_unreachable====host=%s===result=%s' % (host, return_data))
+    #
+    #
+    # def v2_runner_on_skipped(self, result):
+    #     if C.DISPLAY_SKIPPED_HOSTS:
+    #         host = result._host.get_name()
+    #         self.runner_on_skipped(host, self._get_item(getattr(result._result, 'results', {})))
+    #         logging.warning("this task does not execute,please check parameter or condition.")
+    #
+    #
+    # def v2_playbook_on_stats(self, stats):
+    #     logging.warning('===========palybook executes completed========')
 
 
 class AnsibleAPI(object):
-    def __init__(self, hostlist, playbooks, *args, **kwargs):
+    def __init__(self, hostlist, playbooks,uuid, systemname,*args, **kwargs):
         self.hostlist = hostlist
         self.playbooks = playbooks
         # self.inventory = None
@@ -79,6 +106,8 @@ class AnsibleAPI(object):
         # self.options = None
         self.passwords = None
         self.callback = None
+        self.taskid = uuid
+        self.system = systemname
         #     self.__initializeData()
         #
         # def __initializeData(self):
@@ -107,11 +136,11 @@ class AnsibleAPI(object):
             loader=self.loader,
             options=self.options,
             passwords=None)
-        playbook._tqm._stdout_callback = ResultsCollector()
+        playbook._tqm._stdout_callback = ResultsCollector(self.taskid, self.system)
         playbook.run()
 
-
-# hostlist = ['10.26.222.210']
+# hostlist = ['10.26.202.133']
 # playbooks = ['/tempdir/ancode/test.yml']
 # pl = AnsibleAPI(hostlist, playbooks)
 # pl.runplaybook()
+
