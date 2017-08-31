@@ -2,7 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from .tools.ostools import Task
-from django.db import connection
+from django.db import connection;
+
+connection.close()
 from .tools.dbtools import dictfetchall
 import datetime
 from django.urls import reverse
@@ -800,13 +802,35 @@ def opt_checksystem(request):
     hostlist = list(set(hostlist))
     # print(hostlist)
     myuuid = str(uuid.uuid1())
+    taskinfo = {'taskid': myuuid, 'taskers': []}
+    # taskinfo = {'taskid': myuuid,
+    #             'taskers': [{'ipaddress': '10.26.202.133', 'taskcount': 2},
+    #                         {'ipaddress': '10.26.202.134', 'taskcount': 2}]
+    #             }
+    # print(taskinfo)
+    i = 0
     for item in hostlist:
+        taskinfo['taskers'].append({'ipaddress': item, 'taskcount': 4})
+        taskcount = taskinfo['taskers'][i]['taskcount']
+        #print("taskcount=", taskcount)
+        # 将任务信息更新到tasksumary表中
+        sql_inserttasksummary = "insert into tasksummary(taskid,ipaddress,taskcount) VALUES ('%s','%s','%d') " \
+                                % (myuuid, item, taskcount)
+        # print("inserttasksummary=", sql_inserttasksummary)
+        with connection.cursor() as cursor:
+            cursor.execute(sql_inserttasksummary)
+            connection.close()
         host = [item]
+        i = i + 1
+        taskname = "process" + str(i)
         # print(host)
-        ymlfile = ['/tempdir/ancode/test.yml']
+        ymlfile = ['/operation/autoops/yml/os.yml']
         task = multiprocessing.Process(
-            target=AnsibleAPI(hostlist=host, playbooks=ymlfile, uuid=myuuid, systemname=system).runplaybook)
+            target=AnsibleAPI(hostlist=host, playbooks=ymlfile, uuid=myuuid, systemname=system,
+                              processname=taskname).runplaybook)
+        #print("taskname=", taskname)
         task.start()
+    #print("taskinfo=", taskinfo)
     # anl = AnsibleAPI(
     #     hostlist = ['10.26.222.216'],
     #     playbooks = ['/tempdir/ancode/test.yml'],
@@ -891,7 +915,38 @@ def opt_checksystem(request):
     #     # join()的作用是，在子线程完成运行之前，阻塞父线程。
     # print("%s===执行结束了。\n" % time.time())
 
-    return JsonResponse({"message": "OK"})
+    return JsonResponse(taskinfo)
+
+
+# 根据前端的taskid提供后台任务运行的进度
+def query_taskprocess(request):
+    taskid = request.GET.get('taskid')
+    # print(taskid)
+    with connection.cursor() as cursor:
+        sqlstatement = 'select ipaddress,taskcurrent as stepcount from tasksummary where taskid = "%s" ' % (
+            taskid)
+        cursor.execute(sqlstatement)
+        data = dictfetchall(cursor)
+    taskprocess = {}
+    for item in data:
+        taskprocess[item['ipaddress']] = item['stepcount']
+    print("taskprocess=", taskprocess)
+    return JsonResponse({'datas': taskprocess})
+
+
+# 根据前端的taskid提供最终检查的结果
+@csrf_exempt
+def systemcheck_report(request):
+    taskid = request.GET.get('taskid')
+    sql_systemcheckreport = 'select ipaddress,result,taskname  from checksystem where result!="[]" and taskid = "%s" group by ipaddress' % (
+        taskid)
+    with connection.cursor() as cursor:
+        cursor.execute(sql_systemcheckreport)
+        data = dictfetchall(cursor)
+    # print(sql_getsystemlist,data)
+    # print("report==================",taskid)
+    # print(data)
+    return JsonResponse({'reports': data})
 
 # class ansibleThread(threading.Thread):
 #     def run(self):

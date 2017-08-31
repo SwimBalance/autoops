@@ -1332,13 +1332,15 @@ function getmachinelist() {
 function initCheckSystemTask(data) {
     //创建表格
     var myCheckSystem = $('#checkSystemTask');
-    var myCheckSystem_table = $('<table class="table"></table>');
+    myCheckSystem.empty();
+    var myCheckSystem_table = $('<table class="table table-hover table-condensed"></table>');
     var myCheckSystem_thead = $('<thead><tr><td>系统名称</td><td>机器名称</td><td>运行结果</td></tr></thead>');
     var myCheckSystem_tbody = $('<tbody></tbody>').addClass('progress_tboday');
     //添加数据行
     for (var i = 0; i < data.length; i++) {
         var system_name = data[i]['systemname'];
         var host = data[i]['machinename'];
+        var uniquename = data[i]['machineip'];
         var line = '';
         line += '<tr>';
         line += '<td>' + system_name + '</td>';
@@ -1346,7 +1348,7 @@ function initCheckSystemTask(data) {
         var progressbar = '';
         progressbar += '<td>';
         progressbar += '<div class="progress">';
-        progressbar += '<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">';
+        progressbar += '<div id="' + uniquename + '" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">';
         progressbar += '<span class="sr-only">60% Complete</span>';
         progressbar += '</div>' + '</div>';
         progressbar += '</td>';
@@ -1356,13 +1358,17 @@ function initCheckSystemTask(data) {
     }
 
     myCheckSystem_table.append(myCheckSystem_thead).append(myCheckSystem_tbody);
-    myCheckSystem.text('操作结果：').append(myCheckSystem_table)
+    //myCheckSystem.text('操作结果：').append(myCheckSystem_table)
+    myCheckSystem.append(myCheckSystem_table)
+    myCheckSystem.append("<div>检查结果:<ul  id='reports'></ul></div>")
 }
 //检查系统操作
+
 function opt_checksystem(obj) {
     //获取本地存储的机器数据
     var mymachines = window.localStorage.getItem("machines");
     var count = mymachines.length;
+    $("#reports").empty();
     $.ajax({
         type: "POST",
         url: "./../operation/checksystem/",
@@ -1374,11 +1380,103 @@ function opt_checksystem(obj) {
         },
         success: function (datas) {
             //loadapachedata(datas)
-            alert(datas['message'])
+            //alert(datas['taskers'][0]['ipaddress']);
+            querytaskresult(datas);
         }
     })
 
 }
+//根据后台任务执行情况刷新进度条，当所有任务都完成时，页面停止刷新
+function querytaskresult(datas) {
+    var taskid = datas.taskid;
+    var taskers = datas.taskers;
+    var tasknumber_sum = 0;
+    for (i = 0; i < taskers.length; i++) {
+        tasknumber_sum = tasknumber_sum + taskers[i]['taskcount']
+    }
+    // console.log("tasknumber_sum=", tasknumber_sum);
+    //启动进度条
+    $('.progress-bar').css("width", "0%");
+    //定义一个定时器，开始刷新进度条
+    //var count = 0;
+    //开始根据taskid轮询结果
+    timer1 = setInterval(function () {
+        //count = count + 1;
+        //alert(count);
+        //var widthcount = (count /5) * 100;
+        //$('.progress-bar').css("width", widthcount + "%");
+        var tasknumber_current = 0;
+        $.ajax({
+            type: "GET",
+            url: "./../operation/querytaskprocess/",
+            datatype: 'json',
+            data: {
+                'taskid': taskid
+            },
+            success: function (datas) {
+                data = datas['datas'];
+                // console.log("data=", data);
+                // for (var key in data) {
+                //     console.log("key=" + key + " data=", data[key])
+                // }
+                //querytaskresult(datas)
+                //alert(11111111111111111)
+                for (i = 0; i < taskers.length; i++) {
+                    var taskcount = taskers[i]['taskcount'];
+                    var ipaddress = taskers[i]['ipaddress'];
+                    var taskcurrent = data[ipaddress];
+                    var process = taskcurrent / taskcount * 100;
+                    // console.log("taskcount=", taskcount, " taskcurrent=", taskcurrent, "process=", process);
+                    //$("#"+id).css("background","#f99");
+                    //var $ipaddress=$("[id=ipaddress]")
+                    var $ipaddress = $("[id='" + ipaddress + "']");
+                    // console.log("iplen=", $ipaddress.length);
+                    $ipaddress.css("width", process + "%");
+                    tasknumber_current = tasknumber_current + taskcurrent;
+                    // console.log("tasknumber_current=",tasknumber_current)
+                }
+                //如果达到超时时间，停止定时器
+
+                if (parseInt(tasknumber_sum) == parseInt(tasknumber_current)) {
+                    clearInterval(timer1);
+                    //当结果等于tasknmuber时，结束进度条，生成最终结果
+                    //检查执行完成之后生成最终的报告
+                    $("#reports").empty();
+                    $.ajax({
+                        type: "GET",
+                        url: "./../operation/systemcheckreport/",
+                        datatype: 'json',
+                        data: {
+                            'taskid': taskid
+                        },
+                        success: function (datas) {
+                            //alert(datas['reports'][0]['result']);
+                            //$("#reports").append("<li>"+datas['reports'][0]['result']+"</li>")
+                            //直接展示数据库中result!=[]的结果，格式为机器名：详细信息
+                            //alert("report=", datas['reports'])
+                            //$("#checktable").append("<p>"+datas['reports'][0]['result']+"</p>")
+                            var reportlen = datas['reports'].length;
+                            if(reportlen==0){
+                                $("#reports").append("<li>检查正常！</li>")
+                            }
+                            else{
+                                for (i = 0; i < datas['reports'].length; i++) {
+                                //$("#reports").append("<li>"+datas['reports'][i]['result']+"</li>")
+                                $("#reports").append("<li>" + datas['reports'][i]['ipaddress'] + "==>" + datas['reports'][i]['result'] + "</li>")
+                            }
+                            }
+                        }
+                    })
+                }
+            }
+        });
+        //如果达到超时时间，停止定时器
+        // if (parseInt(tasknumber) == 15) {
+        //     clearInterval(timer1);
+        // }
+    }, 3000);
+}
+
 
 //服务器选中后触发修改图中的服务器
 function machinechange() {

@@ -37,4 +37,6 @@ urlpatterns = [
     url(r'^operation/getsystemlist/$', views.get_system_list, name='getsystemlist'),
     url(r'^operation/getmachinelist/$', views.get_machine_list, name='getmachinelist'),
     url(r'^operation/checksystem/$', views.opt_checksystem),
+    url(r'^operation/querytaskprocess/$', views.query_taskprocess),
+    url(r'^operation/systemcheckreport/$', views.systemcheck_report),
 ]
