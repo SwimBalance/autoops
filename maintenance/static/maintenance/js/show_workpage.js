@@ -1251,6 +1251,8 @@ function systemchanged(obj) {
     $("div[id='dblayer'] i").css({'color': 'lightgrey'});
     //获取某个应用系统对应的服务器清单
     getmachinelist();
+    console.log("used:",window.localStorage.getItem("usedmachine"));
+    console.log("all:",window.localStorage.getItem("machines"));
     //var sysindx = obj.selectedIndex;
     var systemid = obj.options[obj.selectedIndex].value;
     if (systemid != 0) {
@@ -1278,12 +1280,15 @@ function getmachinelist() {
     $.ajax({
         type: "GET",
         url: "./../operation/getmachinelist/",
+        async:false,
         datatype: 'json',
         data: {systemname: systemname},
         success: function (data) {
             window.localStorage.setItem('machines', JSON.stringify(data)); //将获取的数据存到本地
+            console.log("getmachienlist:",window.localStorage.getItem("machines"));
             for (i = 0; i < data.length; i++) {
                 $("#machinelist").append('<option title="' + data[i]['types'] + '" value="' + data[i]['levels'] + '">' + data[i]['machinename'] + '</option>');
+                //console.log(data[i]['levels'],data[i]['machinename'])
                 //$("#machinelist").append('<option>'+i+'</option>');
                 $('#machinelist').selectpicker('render');
                 $('#machinelist').selectpicker('refresh');
@@ -1327,6 +1332,7 @@ function getmachinelist() {
     $('#machinelist').selectpicker('render');
     $('#machinelist').selectpicker('refresh');
     $('#machinelist').selectpicker();
+    //console.log("getmachienlist1111:",window.localStorage.getItem("machines"));
 }
 //初始化任务清单
 function initCheckSystemTask(data) {
@@ -1360,15 +1366,28 @@ function initCheckSystemTask(data) {
     myCheckSystem_table.append(myCheckSystem_thead).append(myCheckSystem_tbody);
     //myCheckSystem.text('操作结果：').append(myCheckSystem_table)
     myCheckSystem.append(myCheckSystem_table)
-    myCheckSystem.append("<div>检查结果:<ul  id='reports'></ul></div>")
+    myCheckSystem.append("<div>检查结果:<div  id='reports'></div></div>")
 }
 //检查系统操作
 
 function opt_checksystem(obj) {
     //获取本地存储的机器数据
-    var mymachines = window.localStorage.getItem("machines");
+    //var mymachines = window.localStorage.getItem("machines");
+    // var mymachines = window.localStorage.getItem("usedmachine");
+    // if(mymachines.length==0){
+    //     mymachines = window.localStorage.getItem("machines");
+    // }
+    var mymachines='';
+    if(window.localStorage.getItem("usedmachine")){
+        mymachines = window.localStorage.getItem("usedmachine");
+    }
+    else{
+        mymachines = window.localStorage.getItem("machines");
+    }
     var count = mymachines.length;
     $("#reports").empty();
+    $('#startchecksystem').attr('disabled', '');
+    $('.progress-bar').css("width", "0%");
     $.ajax({
         type: "POST",
         url: "./../operation/checksystem/",
@@ -1396,7 +1415,7 @@ function querytaskresult(datas) {
     }
     // console.log("tasknumber_sum=", tasknumber_sum);
     //启动进度条
-    $('.progress-bar').css("width", "0%");
+    //$('.progress-bar').css("width", "0%");
     //定义一个定时器，开始刷新进度条
     //var count = 0;
     //开始根据taskid轮询结果
@@ -1439,34 +1458,9 @@ function querytaskresult(datas) {
 
                 if (parseInt(tasknumber_sum) == parseInt(tasknumber_current)) {
                     clearInterval(timer1);
+                    clearInterval(timer2);
                     //当结果等于tasknmuber时，结束进度条，生成最终结果
                     //检查执行完成之后生成最终的报告
-                    $("#reports").empty();
-                    $.ajax({
-                        type: "GET",
-                        url: "./../operation/systemcheckreport/",
-                        datatype: 'json',
-                        data: {
-                            'taskid': taskid
-                        },
-                        success: function (datas) {
-                            //alert(datas['reports'][0]['result']);
-                            //$("#reports").append("<li>"+datas['reports'][0]['result']+"</li>")
-                            //直接展示数据库中result!=[]的结果，格式为机器名：详细信息
-                            //alert("report=", datas['reports'])
-                            //$("#checktable").append("<p>"+datas['reports'][0]['result']+"</p>")
-                            var reportlen = datas['reports'].length;
-                            if(reportlen==0){
-                                $("#reports").append("<li>检查正常！</li>")
-                            }
-                            else{
-                                for (i = 0; i < datas['reports'].length; i++) {
-                                //$("#reports").append("<li>"+datas['reports'][i]['result']+"</li>")
-                                $("#reports").append("<li>" + datas['reports'][i]['ipaddress'] + "==>" + datas['reports'][i]['result'] + "</li>")
-                            }
-                            }
-                        }
-                    })
                 }
             }
         });
@@ -1474,9 +1468,56 @@ function querytaskresult(datas) {
         // if (parseInt(tasknumber) == 15) {
         //     clearInterval(timer1);
         // }
-    }, 3000);
+    }, 1000);
+    timer2 = setInterval(function () {
+        $("#reports").empty();
+        $.ajax({
+            type: "GET",
+            url: "./../operation/systemcheckreport/",
+            datatype: 'json',
+            data: {
+                'taskid': taskid
+            },
+            success: function (datas) {
+                $('#startchecksystem').removeAttr('disabled');
+                //alert(datas['reports'][0]['result']);
+                //$("#reports").append("<li>"+datas['reports'][0]['result']+"</li>")
+                //直接展示数据库中result!=[]的结果，格式为机器名：详细信息
+                //alert("report=", datas['reports'])
+                //$("#checktable").append("<p>"+datas['reports'][0]['result']+"</p>")
+                var reportlen = datas['reports'].length;
+                //alert(reportlen)
+                if (reportlen == 0) {
+                    $("#reports").append("<p>检查正常！</p>")
+                } else {
+                    var html = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>'
+                    for (i = 0; i < datas['reports'].length; i++) {
+                        //$("#reports").append("<li>"+datas['reports'][i]['result']+"</li>")
+                        //$("#reports").append("<p class='reportdetail'>" + i + "." + datas['reports'][i]['ipaddress'] + "==>" + datas['reports'][i]['result'] + "</p>");
+                        html += ' <div class="panel panel-default">  <div class="panel-heading" role="tab" id="heading' + i + '"> <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" aria-expanded="false" aria-controls="collapse' + i + '"> ' + datas["reports"][i]["ipaddress"] + '==>' + datas["reports"][i]["taskname"] + ' </a>  </h4> </div>  <div id="collapse' + i + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading' + i + '">            <div class="panel-body"> ' + datas["reports"][i]["result"] + ' </div>        </div>    </div>'
+                    }
+                }
+                //控制文字的显示
+                // $(".reportdetail").each(function () {
+                //     var maxwidth = 50;//设置最多显示的字数
+                //     var text = $(this).text();
+                //     if ($(this).text().length > maxwidth) {
+                //         $(this).text($(this).text().substring(0, maxwidth));
+                //         $(this).html($(this).html() + "..." + "<a href='#'> 展开</a>");//如果字数超过最大字数，超出部分用...代替，并且在后面加上点击展开的链接；
+                //     }
+                // })
+                //var html='<p>123</p>'
+                $("#reports").append(html)
+            }
+        })
+    }, 1000)
 }
 
+// $(function () {
+//     $("p a").click(function () {
+//         alert("clicked!")
+//     });
+// });
 
 //服务器选中后触发修改图中的服务器
 function machinechange() {
@@ -1523,13 +1564,13 @@ function machinechange() {
     //alert("value="+machinelevellist+" len="+len);
     //alert(machinelevellist);
     var allserver = all.split(',');
-    // for(i=0;i<allserver.length;i++){
-    //    alert(allserver[i])
+    // for (i = 0; i < allserver.length; i++) {
+    //     console.log(i, "=", allserver[i])
     // }
     var currentserver = servername;
     //alert('l='+currentserver.length);
     // for (i = 0; i < currentserver.length; i++) {
-    //     alert('xxx=' + currentserver[i])
+    //     console.log('used=', currentserver[i],currentserver.length)
     // }
     var unselserver = '';
     //allserver是所有服务器清单；currentserver是当前选择的服务器；unselserver是未选择的服务器
@@ -1549,7 +1590,7 @@ function machinechange() {
     //注意一定要在前面赋值，如果在for中直接使用 i < unselserver.split(',').length可能导致结果不正确
     var unselserver = unselserver.split(',');
     // for (i = 0; i < unselserver.length; i++) {
-    //     alert(unselserver[i])
+    //     console.log("unused:", unselserver[i],unselserver[i].length)
     // }
     //alert("all:" + allserver + " cur:" + currentserver + " unsel:" + unselserver);
     //对未选中的服务器将颜色变为灰色
@@ -1595,6 +1636,38 @@ function machinechange() {
     //         }
     //     }
     // }
+    //生成当前已经选择机器的信息，当所有的机器都未选中时，默认为所有的机器
+    var infomachine = JSON.parse(window.localStorage.getItem('machines'));
+    if (currentserver[0].length == 0) {
+        console.log("len 0");
+        infomachine = JSON.parse(window.localStorage.getItem('machines'))
+    }
+    else {
+        for (i = 0; i < unselserver.length - 1; i++) {
+            var lv = unselserver[i].split(":")[0];
+            var name = unselserver[i].split(":")[1];
+            //console.log('lv:',lv," name:",name);
+            for (j = 0; j < infomachine.length; j++) {
+                //console.log('level=',infomachine[j]['levels']," maname=",infomachine[j]['machinename'])
+                if ((lv == infomachine[j]['levels']) && ( name == infomachine[j]['machinename'])) {
+                    infomachine.splice(j, 1);
+                    //console.log("match")
+                }
+                //console.log("i=", infomachine[i]['machineip'])
+            }
+        }
+    }
+    window.localStorage.setItem('usedmachine', JSON.stringify(infomachine));
+    //initCheckSystemTask()
+    //console.log("storage after=", window.localStorage.getItem('usedmachine'));
+    //遍历当前服务器清单，生成表格：
+    var servers = JSON.parse(window.localStorage.getItem('usedmachine'));
+    //根据机器清单，初始化表格
+    initCheckSystemTask(servers);
+    // for(i=0;i<servers.length;i++){
+    //     //console.log("server=",servers[i]['machinename'])
+    // }
+
 
     //遍历服务器，对未使用的服务器进行着色，如果存在未被选择的服务器，将这些服务器设置成灰色
     // if (unselserver == '') {
@@ -1630,4 +1703,22 @@ $(function () {
         $(this).parent().siblings('li').children('a').siblings('ul').collapse('hide');
     })
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

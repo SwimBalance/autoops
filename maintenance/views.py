@@ -71,7 +71,7 @@ def login(request):
 
 
 # 登录成功后，跳转到index页面
-# @login_auth
+@login_auth
 def index(request):
     currentuser = request.COOKIES.get('loginname')
     return render(request, 'maintenance/index.html', {'user': currentuser})
@@ -812,7 +812,7 @@ def opt_checksystem(request):
     for item in hostlist:
         taskinfo['taskers'].append({'ipaddress': item, 'taskcount': 4})
         taskcount = taskinfo['taskers'][i]['taskcount']
-        #print("taskcount=", taskcount)
+        # print("taskcount=", taskcount)
         # 将任务信息更新到tasksumary表中
         sql_inserttasksummary = "insert into tasksummary(taskid,ipaddress,taskcount) VALUES ('%s','%s','%d') " \
                                 % (myuuid, item, taskcount)
@@ -825,12 +825,13 @@ def opt_checksystem(request):
         taskname = "process" + str(i)
         # print(host)
         ymlfile = ['/operation/autoops/yml/os.yml']
+        # celery
         task = multiprocessing.Process(
             target=AnsibleAPI(hostlist=host, playbooks=ymlfile, uuid=myuuid, systemname=system,
                               processname=taskname).runplaybook)
-        #print("taskname=", taskname)
+        # print("taskname=", taskname)
         task.start()
-    #print("taskinfo=", taskinfo)
+    # print("taskinfo=", taskinfo)
     # anl = AnsibleAPI(
     #     hostlist = ['10.26.222.216'],
     #     playbooks = ['/tempdir/ancode/test.yml'],
@@ -923,7 +924,7 @@ def query_taskprocess(request):
     taskid = request.GET.get('taskid')
     # print(taskid)
     with connection.cursor() as cursor:
-        sqlstatement = 'select ipaddress,taskcurrent as stepcount from tasksummary where taskid = "%s" ' % (
+        sqlstatement = 'select ipaddress,taskcurrent as stepcount,taskfailed,taskunreacheable from tasksummary where taskid = "%s" ' % (
             taskid)
         cursor.execute(sqlstatement)
         data = dictfetchall(cursor)
@@ -938,8 +939,9 @@ def query_taskprocess(request):
 @csrf_exempt
 def systemcheck_report(request):
     taskid = request.GET.get('taskid')
-    sql_systemcheckreport = 'select ipaddress,result,taskname  from checksystem where result!="[]" and taskid = "%s" group by ipaddress' % (
+    sql_systemcheckreport = 'select ipaddress,result,taskname,machinename  from checksystem a,machineinfo b where a.ipaddress=b.machineip and a.result!="[]" and a.taskid = "%s" ' % (
         taskid)
+    print(sql_systemcheckreport)
     with connection.cursor() as cursor:
         cursor.execute(sql_systemcheckreport)
         data = dictfetchall(cursor)

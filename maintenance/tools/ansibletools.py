@@ -111,16 +111,17 @@ class ResultsCollector(CallbackBase):
 
     # 每台服务器每个task开始时调用的函数，运行完之后调用v2_runner_on_ok等函数
     def playbook_on_task_start(self, name, is_conditional):
+        # print("task start")
         processname = self.processname
         taskname = name
         taskid = self.taskid
         systemname = self.system
         self.stats[processname, taskname] = datetime.datetime.now().strftime('%Y%m%d %H:%M:%S')
-        #print("playbook_on_task_start!", taskname, processname, self.stats)
+        # print("playbook_on_task_start!", taskname, processname, self.stats)
         sqlstatement = "insert into checksystem(taskid,taskname,starttime,systemname,processname) " \
                        "VALUES ('%s', '%s', '%s', '%s', '%s')" % (
                            self.taskid, taskname, self.stats[processname, taskname], self.system, processname)
-        #print(sqlstatement)
+        # print(sqlstatement)
         with connection.cursor() as cursor:
             cursor.execute(sqlstatement)
             connection.close()
@@ -131,22 +132,24 @@ class ResultsCollector(CallbackBase):
         taskid = self.taskid
         systemname = self.system
         endtime = datetime.datetime.now().strftime('%Y%m%d %H:%M:%S')
-        sqlstatement = "update checksystem set endtime='%s' where id=(select a.id from ((select max(id) as id from checksystem where taskid='%s' and processname='%s' and systemname='%s') a))"%(endtime,taskid,processname,systemname)
-        #print(sqlstatement)
+        sqlstatement = "update checksystem set endtime='%s' where id=(select a.id from ((select max(id) as id from checksystem where taskid='%s' and processname='%s' and systemname='%s') a))" % (
+            endtime, taskid, processname, systemname)
+        print(sqlstatement)
         with connection.cursor() as cursor:
             cursor.execute(sqlstatement)
-        # Record the timing of the very last task
-        #print("playbook_on_stats")
+            # Record the timing of the very last task
+            # print("playbook_on_stats")
 
     # 与playbook_on_stats对应，每台服务器task调用开始时调用的函数，在playbook_on_start后运行
     # def playbook_on_play_start(self, name):
     #     print("playbook_on_play_start", name)
-    #每个task正常运行后调用该函数
+    # 每个task正常运行后调用该函数
     def v2_runner_on_ok(self, result):
+        # print("ok")
         processname = self.processname
         taskid = self.taskid
         taskname = result.task_name
-        #print(processname + "=====v2_runner_on_ok======")
+        # print(processname + "=====v2_runner_on_ok======")
         ipaddress = result._host
         res = result._result['stdout_lines']
         status = 'OK'
@@ -155,51 +158,62 @@ class ResultsCollector(CallbackBase):
         #                    self.taskid, ipaddress, res, taskname, start, end, status, self.system)
         sqlstatement = "update checksystem set result =\"%s\" ,ipaddress='%s',status='%s' where taskid='%s' and taskname='%s' and processname='%s' " % (
             res, ipaddress, status, taskid, taskname, processname)
-        #print(sqlstatement)
-        sql_tasksummary="update tasksummary set taskcurrent=taskcurrent+1 where taskid='%s' and ipaddress='%s'"%(taskid,ipaddress)
-        #print("sql_tasksummary=",sql_tasksummary)
+        # print(sqlstatement)
+        sql_tasksummary = "update tasksummary set taskcurrent=taskcurrent+1 where taskid='%s' and ipaddress='%s'" % (
+            taskid, ipaddress)
+        # print("sql_tasksummary=",sql_tasksummary)
         with connection.cursor() as cursor:
             cursor.execute(sqlstatement)
             cursor.execute(sql_tasksummary)
             connection.close()
-    #task运行failed调用该函数
+
+    # task运行failed调用该函数
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        host = result._host.get_name()
-        self.runner_on_failed(host, result._result, ignore_errors)
-        return_data = self._get_return_data(result._result)
-        # print(result)
-        logging.warning('===v2_runner_on_failed====host=%s===result=%s' % (host, return_data))
+        processname = self.processname
+        taskid = self.taskid
+        taskname = result.task_name
+        ipaddress = result._host
+        print(result._result.keys())
+        res = result._result['stderr_lines']
+        status = 'Failed'
+        sqlstatement = "update checksystem set result =\"%s\" ,ipaddress='%s',status='%s' where taskid='%s' and taskname='%s' and processname='%s'" % (
+            res, ipaddress, status, taskid, taskname, processname)
+        # print(sqlstatement)
+        sql_tasksummary = "update tasksummary set taskfailed=taskcurrent+1,taskcurrent =taskcount where taskid='%s' and ipaddress='%s'" % (
+            taskid, ipaddress)
+        print("sql_tasksummary=", sql_tasksummary)
+        with connection.cursor() as cursor:
+            cursor.execute(sqlstatement)
+            cursor.execute(sql_tasksummary)
+            connection.close()
 
     # host无法访问时调用该函数
     def v2_runner_on_unreachable(self, result):
+        processname = self.processname
+        taskid = self.taskid
+        taskname = result.task_name
         ipaddress = result._host
-        # # print('taskid = '+ self.taskid)
-        # taskname = result.task_name
-        # # print(result._result.keys())
-        # start = result._result['start']
-        # end = result._result['end']
-        # res = result._result['stdout_lines']
-        print(ipaddress, result._result)
+        res = "Server Disconnected!"
         status = 'UNREACHABLE'
-        # print(status)
-        # sqlstatement = "insert into checksystem(taskid,ipaddress,result,taskname,starttime,endtime,status,systemname) " \
-        #                "VALUES ('%s', '%s', \"%s\", '%s', '%s', '%s', '%s', '%s')" % (
-        #                    self.taskid, ipaddress, res, taskname, start, end, status, self.system)
+        sqlstatement = "update checksystem set result =\"%s\" ,ipaddress='%s',status='%s' where taskid='%s' and taskname='%s' and processname='%s' " % (
+            res, ipaddress, status, taskid, taskname, processname)
         # print(sqlstatement)
-        # with connection.cursor() as cursor:
-        #     cursor.execute(sqlstatement)
-        #     logging.warning('===v2_runner_on_unreachable====host=%s===result=%s' % (host, return_data))
-        #
-        #
-        # def v2_runner_on_skipped(self, result):
-        #     if C.DISPLAY_SKIPPED_HOSTS:
-        #         host = result._host.get_name()
-        #         self.runner_on_skipped(host, self._get_item(getattr(result._result, 'results', {})))
-        #         logging.warning("this task does not execute,please check parameter or condition.")
-        #
-        #
-        # def v2_playbook_on_stats(self, stats):
-        #     logging.warning('===========palybook executes completed========')
+        sql_tasksummary = "update tasksummary set taskunreacheable=taskcurrent+1,taskcurrent=taskcount where taskid='%s' and ipaddress='%s'" % (
+            taskid, ipaddress)
+        # print("sql_tasksummary=",sql_tasksummary)
+        with connection.cursor() as cursor:
+            cursor.execute(sqlstatement)
+            cursor.execute(sql_tasksummary)
+            connection.close()
+            # def v2_runner_on_skipped(self, result):
+            #     if C.DISPLAY_SKIPPED_HOSTS:
+            #         host = result._host.get_name()
+            #         self.runner_on_skipped(host, self._get_item(getattr(result._result, 'results', {})))
+            #         logging.warning("this task does not execute,please check parameter or condition.")
+            #
+            #
+            # def v2_playbook_on_stats(self, stats):
+            #     logging.warning('===========palybook executes completed========')
 
 
 class AnsibleAPI(object):
